@@ -365,8 +365,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+// =============================
+// 🌐 API Configuration
+// =============================
+const API_CONFIG = {
+  getBaseURL: function() {
+    const hostname = window.location.hostname;
+
+    // Local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://127.0.0.1:8000';
+    }
+
+    // Production
+    return 'https://tclforge.onrender.com';
+  }
+};
+
+const API_URL = API_CONFIG.getBaseURL();
+console.log('Using API URL:', API_URL); // For debugging
+
+
+
   try {
-    const res = await fetch("http://127.0.0.1:8000/me", {
+    const res = await fetch(`${API_URL}/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -553,7 +575,7 @@ async function resetPassword() {
   }
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/auth-reset-password", {
+    const res = await fetch(`${API_URL}/auth-reset-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
