@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCL Interview Preparation | TCL Forge</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Prism for syntax highlighting -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tcl.min.js"></script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #e2e8f0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+    .glow-text {
+      text-shadow: 0 0 10px #a855f7, 0 0 20px #9333ea;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      backdrop-filter: blur(12px);
+      border-radius: 0.9rem;
+      transition: all 0.25s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 18px rgba(147, 51, 234, 0.4);
+      border-color: rgba(168, 85, 247, 0.8);
+    }
+    details summary {
+      list-style: none;
+      cursor: pointer;
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] summary .q-title {
+      color: #a855f7;
+    }
+    .fade-in {
+      animation: fadeIn 0.35s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0);   }
+    }
+    .control-btn {
+      border-radius: 9999px;
+      background-color: #1e293b;
+      border: 1px solid #475569;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+    }
+    .control-btn:hover {
+      background-color: #334155;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.6);
+    }
+    .primary-pill {
+      background-image: linear-gradient(to right, #7c3aed, #a855f7);
+      color: white;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+    }
+    .primary-pill:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+    }
+    .search-box {
+      background-color: #020617;
+      border-radius: 9999px;
+      border: 1px solid #475569;
+      color: #e5e7eb;
+      transition: all 0.2s ease;
+      font-size: 0.85rem;
+    }
+    .search-box:focus {
+      outline: none;
+      border-color: #a855f7;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+    }
+
+    /* Tool Section Styles */
+    .tool-section {
+      margin-bottom: 2rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 0.9rem;
+      overflow: hidden;
+    }
+
+    .tool-header {
+      background: rgba(30, 41, 59, 0.9);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tool-header:hover {
+      background: rgba(30, 41, 59, 1);
+    }
+
+    .tool-header h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .tool-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 1.25rem;
+    }
+
+    .genus-icon {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .innovus-icon {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .tempus-icon {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .toggle-icon {
+      transition: transform 0.3s ease;
+    }
+
+    .tool-section.open .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .tool-content {
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.5s ease;
+    }
+
+    .tool-section.open .tool-content {
+      padding: 1.5rem;
+      max-height: 5000px;
+    }
+
+    .command-count {
+      background: rgba(148, 163, 184, 0.15);
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Profile Dropdown Styles */
+    .profile-container {
+      position: relative;
+    }
+
+    .btn-profile {
+      background: #f59e0b;
+      color: #1e293b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-profile:hover {
+      background: #f97316;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .dropdown-username {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-top: 4px;
+    }
+
+    .dropdown-menu {
+      padding: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    .dropdown-item.logout {
+      border-top: 1px solid #334155;
+      color: #ff6b6b;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #f1f5f9;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+
+    .form-message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+
+    .form-message.active {
+      display: block;
+    }
+
+    .form-message.success {
+      background: #10b981;
+      color: #ecfdf5;
+    }
+
+    .form-message.error {
+      background: #ef4444;
+      color: #fecaca;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 10px 16px;
+      background: #f59e0b;
+      color: #1e293b;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+      background: #f97316;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-fuchsia-700 via-purple-700 to-violet-700 shadow-lg py-4">
+    <div class="container mx-auto px-4 sm:px-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-terminal text-yellow-300 text-xl"></i>
+        <h1 class="text-2xl sm:text-3xl font-extrabold glow-text">TCL Interview Preparation</h1>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="index.html"
+           class="px-3 sm:px-4 py-2 rounded-md bg-slate-900/70 hover:bg-slate-800 text-sm flex items-center border border-slate-700 transition">
+          <i class="fa-solid fa-arrow-left mr-2"></i> Back to Forge
+        </a>
+
+        <!-- Profile Button -->
+        <div class="profile-container">
+          <button class="btn-profile" id="profileBtn">
+            <i class="fas fa-user"></i>
+            <span id="usernameDisplay">Profile</span>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              Logged in as
+              <div class="dropdown-username" id="usernameDisplayDropdown">User</div>
+            </div>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" id="resetPasswordBtn">
+                <i class="fas fa-key"></i>
+                Change Password
+              </button>
+              <button class="dropdown-item logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="flex-1 container mx-auto px-4 sm:px-6 py-6 sm:py-8 fade-in">
+
+    <!-- Top controls -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-semibold flex items-center mb-1">
+          <i class="fa-solid fa-list-check mr-2 text-yellow-400"></i>
+          TCL Commands for PD Interviews (Tool-Specific)
+        </h2>
+        <p class="text-slate-400 text-xs sm:text-sm">
+          Organized by EDA tools. Click on each section to expand/collapse commands for Genus (Synthesis), Innovus (PnR), and Tempus (STA).
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:items-end gap-2">
+        <div class="flex items-center gap-2">
+          <span id="question-count" class="text-xs sm:text-sm text-slate-300">
+            150 Commands
+          </span>
+        </div>
+        <div class="flex flex-wrap gap-2 justify-end">
+          <div class="relative">
+            <input id="searchBox" type="text" placeholder="Search command or description..."
+                   class="search-box pl-8 pr-3 py-1.5 sm:py-2 w-52 sm:w-64" />
+            <i class="fa-solid fa-search text-slate-500 absolute left-2.5 top-1.5 sm:top-2 text-xs"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary controls -->
+    <div class="flex flex-wrap gap-2 mb-5">
+      <button id="btn-expand-all" class="control-btn px-3 py-1.5 flex items-center gap-1">
+        <i class="fa-solid fa-expand"></i><span>Expand All</span>
+      </button>
+      <button id="btn-collapse-all" class="control-btn px-3 py-1.5 flex items-center gap-1">
+        <i class="fa-solid fa-compress"></i><span>Collapse All</span>
+      </button>
+      <button id="btn-shuffle" class="primary-pill px-3 py-1.5 flex items-center gap-1">
+        <i class="fa-solid fa-shuffle"></i><span>Practice Mode (Shuffle)</span>
+      </button>
+    </div>
+
+    <!-- Tool Sections Container -->
+    <div id="tools-container" class="space-y-6">
+      <!-- Genus Section -->
+      <div class="tool-section open" id="genus-section">
+        <div class="tool-header" onclick="toggleSection('genus-section')">
+          <h3>
+            <span class="tool-icon genus-icon">
+              <i class="fas fa-cogs"></i>
+            </span>
+            <span>Genus - Synthesis Commands</span>
+            <span class="command-count" id="genus-count">50 commands</span>
+          </h3>
+          <i class="fas fa-chevron-down toggle-icon text-slate-300"></i>
+        </div>
+        <div class="tool-content">
+          <div id="genus-container" class="grid gap-4 lg:grid-cols-2"></div>
+        </div>
+      </div>
+
+      <!-- Innovus Section -->
+      <div class="tool-section open" id="innovus-section">
+        <div class="tool-header" onclick="toggleSection('innovus-section')">
+          <h3>
+            <span class="tool-icon innovus-icon">
+              <i class="fas fa-microchip"></i>
+            </span>
+            <span>Innovus - PnR Commands</span>
+            <span class="command-count" id="innovus-count">50 commands</span>
+          </h3>
+          <i class="fas fa-chevron-down toggle-icon text-slate-300"></i>
+        </div>
+        <div class="tool-content">
+          <div id="innovus-container" class="grid gap-4 lg:grid-cols-2"></div>
+        </div>
+      </div>
+
+      <!-- Tempus Section -->
+      <div class="tool-section open" id="tempus-section">
+        <div class="tool-header" onclick="toggleSection('tempus-section')">
+          <h3>
+            <span class="tool-icon tempus-icon">
+              <i class="fas fa-clock"></i>
+            </span>
+            <span>Tempus - STA Commands</span>
+            <span class="command-count" id="tempus-count">50 commands</span>
+          </h3>
+          <i class="fas fa-chevron-down toggle-icon text-slate-300"></i>
+        </div>
+        <div class="tool-content">
+          <div id="tempus-container" class="grid gap-4 lg:grid-cols-2"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="py-4 text-center text-xs sm:text-sm text-slate-500 border-t border-slate-800">
+    <p>
+      Part of <span class="text-violet-400 font-semibold">TCL Forge</span> |
+      Built by <span class="text-yellow-300 font-semibold">Kunal Saraswat</span>
+    </p>
+  </footer>
+
+  <!-- Reset Password Modal -->
+  <div class="modal" id="resetModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Change Password</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" class="form-input" id="oldPassword" placeholder="Enter current password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+      </div>
+
+      <div class="form-message" id="resetMessage"></div>
+      <button class="btn-submit" onclick="resetPassword()">Update Password</button>
+    </div>
+  </div>
+
+  <script>
+    // Tool-specific command data (50 commands each)
+    const toolCommands = {
+      genus: [
+        { id: 1, question: "How do you read RTL design in Genus?", command: "read_hdl -vhdl design.vhd" },
+        { id: 2, question: "How do you read constraints in Genus?", command: "read_sdc constraints.sdc" },
+        { id: 3, question: "How do you set operating conditions?", command: "set_operating_conditions -max slow -min fast" },
+        { id: 4, question: "How do you set the target library?", command: "set_attr library slow.db" },
+        { id: 5, question: "How do you elaborate the design?", command: "elaborate top_module" },
+        { id: 6, question: "How do you check design connectivity?", command: "check_design -all" },
+        { id: 7, question: "How do you synthesize the design?", command: "synthesize -to_mapped" },
+        { id: 8, question: "How do you run incremental synthesis?", command: "synthesize -incremental" },
+        { id: 9, question: "How do you optimize for area?", command: "optimize -area" },
+        { id: 10, question: "How do you optimize for power?", command: "optimize -power" },
+        { id: 11, question: "How do you report timing in Genus?", command: "report_timing" },
+        { id: 12, question: "How do you report area?", command: "report_area" },
+        { id: 13, question: "How do you report power?", command: "report_power" },
+        { id: 14, question: "How do you report QoR?", command: "report_qor" },
+        { id: 15, question: "How do you ungroup hierarchy?", command: "ungroup -all -flatten" },
+        { id: 16, question: "How do you set don't touch?", command: "set_dont_touch [get_cells u1]" },
+        { id: 17, question: "How do you set size only?", command: "set_size_only [get_cells u2]" },
+        { id: 18, question: "How do you set multi Vt optimization?", command: "set_multi_vth -enable true" },
+        { id: 19, question: "How do you set clock gating?", command: "set_clock_gating -enable true" },
+        { id: 20, question: "How do you insert scan chains?", command: "insert_scan -chain_count 1" },
+        { id: 21, question: "How do you set scan style?", command: "set_scan_style multiplexed_flip_flop" },
+        { id: 22, question: "How do you write netlist after synthesis?", command: "write_hdl -mapped > synthesized.v" },
+        { id: 23, question: "How do you write constraints after synthesis?", command: "write_sdc > post_synth.sdc" },
+        { id: 24, question: "How do you write SDF for timing?", command: "write_sdf > post_synth.sdf" },
+        { id: 25, question: "How do you write reports?", command: "write_report -format text > report.txt" },
+        { id: 26, question: "How do you set max fanout?", command: "set_max_fanout 20 [current_design]" },
+        { id: 27, question: "How do you set max transition?", command: "set_max_transition 0.5 [current_design]" },
+        { id: 28, question: "How do you set max capacitance?", command: "set_max_capacitance 1.5 [current_design]" },
+        { id: 29, question: "How do you set load on outputs?", command: "set_load 0.5 [all_outputs]" },
+        { id: 30, question: "How do you set drive on inputs?", command: "set_drive 1.0 [all_inputs]" },
+        { id: 31, question: "How do you create generated clock?", command: "create_generated_clock -divide_by 2 -source [get_clocks clk] [get_pins div/out]" },
+        { id: 32, question: "How do you set false path?", command: "set_false_path -from [get_clocks clk1] -to [get_clocks clk2]" },
+        { id: 33, question: "How do you set multicycle path?", command: "set_multicycle_path 2 -setup -from [get_pins A] -to [get_pins B]" },
+        { id: 34, question: "How do you set clock uncertainty?", command: "set_clock_uncertainty 0.1 [get_clocks clk]" },
+        { id: 35, question: "How do you set input delay?", command: "set_input_delay 2.0 -clock clk [all_inputs]" },
+        { id: 36, question: "How do you set output delay?", command: "set_output_delay 1.0 -clock clk [all_outputs]" },
+        { id: 37, question: "How do you set case analysis?", command: "set_case_analysis 1 [get_ports test_mode]" },
+        { id: 38, question: "How do you set disable timing?", command: "set_disable_timing [get_cells u3]" },
+        { id: 39, question: "How do you report constraints?", command: "report_constraints -all_violators" },
+        { id: 40, question: "How do you check timing violations?", command: "check_timing -verbose" },
+        { id: 41, question: "How do you get clock domains?", command: "get_clocks" },
+        { id: 42, question: "How do you get all registers?", command: "get_cells -filter \"is_sequential==true\"" },
+        { id: 43, question: "How do you get combinational cells?", command: "get_cells -filter \"is_combinational==true\"" },
+        { id: 44, question: "How do you get clock buffers?", command: "get_cells -filter \"is_clock_buffer==true\"" },
+        { id: 45, question: "How do you get nets with high fanout?", command: "get_nets -filter \"fanout > 100\"" },
+        { id: 46, question: "How do you rename module?", command: "rename_design new_top" },
+        { id: 47, question: "How do you save session?", command: "save_session genus.session" },
+        { id: 48, question: "How do you restore session?", command: "restore_session genus.session" },
+        { id: 49, question: "How do you exit Genus?", command: "exit" },
+        { id: 50, question: "How do you get Genus version?", command: "get_version" }
+      ],
+      innovus: [
+        { id: 51, question: "How do you read netlist in Innovus?", command: "readNetlist synthesized.v" },
+        { id: 52, question: "How do you read constraints in Innovus?", command: "readSDC constraints.sdc" },
+        { id: 53, question: "How do you read LEF file?", command: "readLef tech.lef" },
+        { id: 54, question: "How do you read DEF file?", command: "readDef floorplan.def" },
+        { id: 55, question: "How do you initialize design?", command: "init_design" },
+        { id: 56, question: "How do you create floorplan?", command: "floorPlan -site core -r 0.7 0.7 10 10 10 10" },
+        { id: 57, question: "How do you set core utilization?", command: "setPlaceMode -place_global_util 0.7" },
+        { id: 58, question: "How do you create power rings?", command: "addRing -type core_rings -layer {top bottom} -width 2 -spacing 1" },
+        { id: 59, question: "How do you create power straps?", command: "addStripe -layer M5 -width 2 -spacing 2 -direction vertical" },
+        { id: 60, question: "How do you connect power?", command: "globalNetConnect VDD -type pgpin -pin VDD -all" },
+        { id: 61, question: "How do you add placement blockage?", command: "createPlaceBlockage -type hard -box {10 10 50 50}" },
+        { id: 62, question: "How do you add routing blockage?", command: "createRouteBlk -layer M3 -box {20 20 40 40}" },
+        { id: 63, question: "How do you place standard cells?", command: "placeDesign" },
+        { id: 64, question: "How do you place macros?", command: "placeInstance macro1 100 100 -fixed" },
+        { id: 65, question: "How do you check placement legality?", command: "checkPlace" },
+        { id: 66, question: "How do you optimize placement?", command: "optDesign -preCTS" },
+        { id: 67, question: "How do you create clock tree?", command: "createClockTree -period 10" },
+        { id: 68, question: "How do you clock tree synthesis?", command: "ccopt_design" },
+        { id: 69, question: "How do you clock tree optimization?", command: "optDesign -postCTS" },
+        { id: 70, question: "How do you check clock skew?", command: "reportClockTree -summary" },
+        { id: 71, question: "How do you route design?", command: "routeDesign" },
+        { id: 72, question: "How do you global route?", command: "globalDetailRoute" },
+        { id: 73, question: "How do you detail route?", command: "detailRoute" },
+        { id: 74, question: "How do you add filler cells?", command: "addFiller -cell FILL*" },
+        { id: 75, question: "How do you add decap cells?", command: "addDecap -cell DECAP*" },
+        { id: 76, question: "How do you check DRC?", command: "verify_drc" },
+        { id: 77, question: "How do you check connectivity?", command: "verifyConnectivity -all" },
+        { id: 78, question: "How do you extract parasitics?", command: "extractRC" },
+        { id: 79, question: "How do you write parasitics?", command: "write寄生参数 -format SPEF -output design.spef" },
+        { id: 80, question: "How do you write DEF?", command: "writeDef -output placed.def" },
+        { id: 81, question: "How do you write netlist?", command: "writeNetlist -output final.v" },
+        { id: 82, question: "How do you write SDF?", command: "write_sdf -version 2.1 final.sdf" },
+        { id: 83, question: "How do you write GDS?", command: "streamOut final.gds -mapFile map.gds" },
+        { id: 84, question: "How do you report timing?", command: "report_timing -max_paths 10" },
+        { id: 85, question: "How do you report power?", command: "report_power" },
+        { id: 86, question: "How do you report area?", command: "report_area" },
+        { id: 87, question: "How do you report congestion?", command: "report_congestion" },
+        { id: 88, question: "How do you report utilization?", command: "report_utilization" },
+        { id: 89, question: "How do you get cell locations?", command: "get_cell_location [get_cells u1]" },
+        { id: 90, question: "How do you move cell?", command: "moveInstance u1 200 200" },
+        { id: 91, question: "How do you delete cell?", command: "deleteInst u1" },
+        { id: 92, question: "How do you resize cell?", command: "sizeCell u1 BUF_X4" },
+        { id: 93, question: "How do you set don't touch?", command: "setDontTouch [get_cells u2]" },
+        { id: 94, question: "How do you set size only?", command: "setSizeOnly [get_cells u3]" },
+        { id: 95, question: "How do you set multi-cut via?", command: "setMultiCut -via -factor 2" },
+        { id: 96, question: "How do you set timing derate?", command: "set_timing_derate -early 0.9 -late 1.1" },
+        { id: 97, question: "How do you save design?", command: "saveDesign final.enc" },
+        { id: 98, question: "How do you restore design?", command: "restoreDesign final.enc" },
+        { id: 99, question: "How do you exit Innovus?", command: "exit" },
+        { id: 100, question: "How do you get Innovus version?", command: "version" }
+      ],
+      tempus: [
+        { id: 101, question: "How do you read netlist in Tempus?", command: "read_verilog final.v" },
+        { id: 102, question: "How do you read constraints in Tempus?", command: "read_sdc constraints.sdc" },
+        { id: 103, question: "How do you read parasitics in Tempus?", command: "read_parasitics design.spef" },
+        { id: 104, question: "How do you set operating conditions?", command: "set_operating_conditions -max slow -min fast" },
+        { id: 105, question: "How do you create clock?", command: "create_clock -name clk -period 10 [get_ports clk]" },
+        { id: 106, question: "How do you create generated clock?", command: "create_generated_clock -divide_by 2 -source clk [get_pins div/out]" },
+        { id: 107, question: "How do you set clock uncertainty?", command: "set_clock_uncertainty 0.15 [get_clocks clk]" },
+        { id: 108, question: "How do you set clock latency?", command: "set_clock_latency -source 0.5 [get_clocks clk]" },
+        { id: 109, question: "How do you set input delay?", command: "set_input_delay 2.0 -clock clk [all_inputs]" },
+        { id: 110, question: "How do you set output delay?", command: "set_output_delay 1.0 -clock clk [all_outputs]" },
+        { id: 111, question: "How do you set load capacitance?", command: "set_load 0.5 [all_outputs]" },
+        { id: 112, question: "How do you set drive strength?", command: "set_drive 1.0 [all_inputs]" },
+        { id: 113, question: "How do you set transition?", command: "set_max_transition 0.5 [current_design]" },
+        { id: 114, question: "How do you set fanout?", command: "set_max_fanout 20 [current_design]" },
+        { id: 115, question: "How do you set capacitance?", command: "set_max_capacitance 1.5 [current_design]" },
+        { id: 116, question: "How do you set false path?", command: "set_false_path -from [get_clocks clk1] -to [get_clocks clk2]" },
+        { id: 117, question: "How do you set multicycle path?", command: "set_multicycle_path 2 -setup -from [get_pins A] -to [get_pins B]" },
+        { id: 118, question: "How do you set case analysis?", command: "set_case_analysis 1 [get_ports test_mode]" },
+        { id: 119, question: "How do you set disable timing?", command: "set_disable_timing [get_cells u1]" },
+        { id: 120, question: "How do you update timing?", command: "update_timing" },
+        { id: 121, question: "How do you report timing?", command: "report_timing -max_paths 10" },
+        { id: 122, question: "How do you report setup timing?", command: "report_timing -delay_type max" },
+        { id: 113, question: "How do you report hold timing?", command: "report_timing -delay_type min" },
+        { id: 114, question: "How do you report clock gating check?", command: "report_clock_gating_check" },
+        { id: 115, question: "How do you report recovery/removal?", command: "report_recovery -all" },
+        { id: 116, question: "How do you report clock skew?", command: "report_clock_skew" },
+        { id: 117, question: "How do you report clock latency?", command: "report_clock_latency" },
+        { id: 118, question: "How do you report timing summary?", command: "report_timing_summary" },
+        { id: 119, question: "How do you report constraint violations?", command: "report_constraint -all_violators" },
+        { id: 120, question: "How do you report timing to specific endpoint?", command: "report_timing -to [get_pins reg1/D]" },
+        { id: 121, question: "How do you report timing from specific startpoint?", command: "report_timing -from [get_pins reg2/Q]" },
+        { id: 122, question: "How do you report worst slack?", command: "report_worst_slack" },
+        { id: 123, question: "How do you report total negative slack?", command: "report_tns" },
+        { id: 124, question: "How do you report violating paths?", command: "report_violating_paths" },
+        { id: 125, question: "How do you report clock domains?", command: "report_clock_domains" },
+        { id: 126, question: "How do you report clock network?", command: "report_clock_network" },
+        { id: 127, question: "How do you report clock tree?", command: "report_clock_tree" },
+        { id: 128, question: "How do you report power?", command: "report_power" },
+        { id: 129, question: "How do you report dynamic power?", command: "report_power -dynamic" },
+        { id: 130, question: "How do you report leakage power?", command: "report_power -leakage" },
+        { id: 131, question: "How do you report cell power?", command: "report_power -cell" },
+        { id: 132, question: "How do you report net power?", command: "report_power -net" },
+        { id: 133, question: "How do you report toggle rate?", command: "report_toggle_rate" },
+        { id: 134, question: "How do you report glitch power?", command: "report_glitch_power" },
+        { id: 135, question: "How do you set power analysis mode?", command: "set_power_analysis_mode -method averaged" },
+        { id: 136, question: "How do you read switching activity?", command: "read_saif activity.saif" },
+        { id: 137, question: "How do you set switching activity?", command: "set_switching_activity -toggle_rate 0.1 -static_probability 0.5 [get_nets net1]" },
+        { id: 138, question: "How do you propagate switching activity?", command: "propagate_switching_activity" },
+        { id: 139, question: "How do you update power?", command: "update_power" },
+        { id: 140, question: "How do you write timing report?", command: "write_timing_report -format text -output timing.rpt" },
+        { id: 141, question: "How do you write power report?", command: "write_power_report -format text -output power.rpt" },
+        { id: 142, question: "How do you write SDF?", command: "write_sdf -version 3.0 final.sdf" },
+        { id: 143, question: "How do you write constraints?", command: "write_sdc final.sdc" },
+        { id: 144, question: "How do you save session?", command: "save_session tempus.session" },
+        { id: 145, question: "How do you restore session?", command: "restore_session tempus.session" },
+        { id: 146, question: "How do you check timing?", command: "check_timing -verbose" },
+        { id: 147, question: "How do you check constraints?", command: "check_constraints -verbose" },
+        { id: 148, question: "How do you get timing arc?", command: "get_timing_arc -from [get_pins A] -to [get_pins B]" },
+        { id: 149, question: "How do you exit Tempus?", command: "exit" },
+        { id: 150, question: "How do you get Tempus version?", command: "get_version" }
+      ]
+    };
+
+    // Initialize auth and profile functionality
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const email = localStorage.getItem("email");
+
+      if (!token) {
+        // Redirect to login if no token
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.username) {
+          document.getElementById("usernameDisplay").textContent = data.username;
+          document.getElementById("usernameDisplayDropdown").textContent = data.username;
+        } else {
+          const user = email ? email.split("@")[0] : "User";
+          document.getElementById("usernameDisplay").textContent = user;
+          document.getElementById("usernameDisplayDropdown").textContent = user;
+        }
+      } catch (err) {
+        const user = email ? email.split("@")[0] : "User";
+        document.getElementById("usernameDisplay").textContent = user;
+        document.getElementById("usernameDisplayDropdown").textContent = user;
+      }
+
+      // Initialize interview prep with tool sections
+      initializeToolSections();
+    });
+
+    function initializeToolSections() {
+      const searchBox = document.getElementById("searchBox");
+      const btnExpandAll = document.getElementById("btn-expand-all");
+      const btnCollapseAll = document.getElementById("btn-collapse-all");
+      const btnShuffle = document.getElementById("btn-shuffle");
+      const questionCount = document.getElementById("question-count");
+
+      // Render commands for each tool
+      renderToolCommands('genus');
+      renderToolCommands('innovus');
+      renderToolCommands('tempus');
+
+      // Update total count
+      const totalCommands = toolCommands.genus.length + toolCommands.innovus.length + toolCommands.tempus.length;
+      questionCount.textContent = `${totalCommands} Commands`;
+
+      // Search handler
+      searchBox.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+
+        Object.keys(toolCommands).forEach(tool => {
+          const filtered = toolCommands[tool].filter(({ question, command, id }) =>
+            question.toLowerCase().includes(term) ||
+            command.toLowerCase().includes(term) ||
+            String(id).includes(term)
+          );
+          renderToolCommands(tool, filtered);
+
+          // Update count for this tool
+          document.getElementById(`${tool}-count`).textContent = `${filtered.length} commands`;
+        });
+      });
+
+      // Expand all sections
+      btnExpandAll.addEventListener("click", () => {
+        document.querySelectorAll('.tool-section').forEach(section => {
+          section.classList.add('open');
+        });
+      });
+
+      // Collapse all sections
+      btnCollapseAll.addEventListener("click", () => {
+        document.querySelectorAll('.tool-section').forEach(section => {
+          section.classList.remove('open');
+        });
+      });
+
+      // Practice mode (shuffle within each section)
+      btnShuffle.addEventListener("click", () => {
+        Object.keys(toolCommands).forEach(tool => {
+          const shuffled = shuffleArray([...toolCommands[tool]]);
+          renderToolCommands(tool, shuffled);
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+
+    function renderToolCommands(tool, commands = null) {
+      const container = document.getElementById(`${tool}-container`);
+      const commandList = commands || toolCommands[tool];
+
+      container.innerHTML = "";
+
+      if (!commandList.length) {
+        container.innerHTML =
+          `<p class='text-slate-400 text-center col-span-full mt-6'>No matching commands found.</p>`;
+        return;
+      }
+
+      commandList.forEach(({ id, question, command }) => {
+        const details = document.createElement("details");
+        details.className = "glass-card qa-item p-4 sm:p-5";
+
+        details.innerHTML = `
+          <summary class="flex items-start gap-2">
+            <span class="text-xs font-mono text-yellow-300 pt-1">${String(id).padStart(3, "0")}.</span>
+            <span class="q-title text-sm sm:text-base font-semibold">${question}</span>
+          </summary>
+          <div class="mt-3 pl-6 text-xs sm:text-sm space-y-2">
+            <div class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800 text-[0.65rem] uppercase tracking-wide text-slate-300 border border-slate-600">
+              <i class="fa-solid fa-code mr-1"></i> TCL Command
+            </div>
+            <pre class="language-tcl text-xs rounded-md bg-slate-900/80 border border-slate-700 overflow-x-auto">
+  <code class="language-tcl">${command.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</code></pre>
+          </div>
+        `;
+        container.appendChild(details);
+      });
+
+      // Update tool count
+      document.getElementById(`${tool}-count`).textContent = `${commandList.length} commands`;
+      Prism.highlightAll();
+    }
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      section.classList.toggle('open');
+    }
+
+    /* ---------- Profile dropdown functionality ---------- */
+    document.getElementById("profileBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.getElementById("profileDropdown").classList.toggle("active");
+    });
+
+    document.addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "/";
+    });
+
+    // Reset password modal
+    document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+      document.getElementById("resetModal").classList.add("active");
+    });
+
+    document.getElementById("closeModal").addEventListener("click", () => {
+      document.getElementById("resetModal").classList.remove("active");
+    });
+
+    document.getElementById("resetModal").addEventListener("click", (e) => {
+      if (e.target === document.getElementById("resetModal")) {
+        document.getElementById("resetModal").classList.remove("active");
+      }
+    });
+
+    // Password reset function
+    async function resetPassword() {
+      const oldPass = document.getElementById("oldPassword").value.trim();
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPassword").value.trim();
+      const msgEl = document.getElementById("resetMessage");
+
+      if (!oldPass || !newPass || !confirmPass) {
+        showMessage(msgEl, "All fields are required.", "error");
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showMessage(msgEl, "New passwords do not match.", "error");
+        return;
+      }
+
+      if (newPass.length < 8) {
+        showMessage(msgEl, "Password must be at least 8 characters.", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/auth-reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("access"),
+          },
+          body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showMessage(msgEl, "Password updated successfully!", "success");
+          setTimeout(() => {
+            document.getElementById("resetModal").classList.remove("active");
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+            msgEl.classList.remove("active");
+          }, 1500);
+        } else {
+          showMessage(msgEl, data.error || "Failed to update password.", "error");
+        }
+      } catch (err) {
+        showMessage(msgEl, "Server error. Please try again.", "error");
+      }
+    }
+
+    function showMessage(el, text, type) {
+      el.textContent = text;
+      el.className = `form-message active ${type}`;
+    }
+
+    // Make functions available globally
+    window.resetPassword = resetPassword;
+    window.toggleSection = toggleSection;
+  </script>
+</body>
+</html>

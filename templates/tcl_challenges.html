@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCL Challenge Arena | TCL Forge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #0f172a, #020617);
+      font-family: 'Inter', sans-serif;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    .glass {
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(148,163,184,0.3);
+      backdrop-filter: blur(14px);
+      border-radius: 0.9rem;
+      transition: all .3s;
+    }
+    .glass:hover { border-color: rgba(148,163,184,0.6); transform: translateY(-3px); }
+    .glow { text-shadow: 0 0 12px #c084fc, 0 0 24px #7c3aed; }
+    .editor {
+      font-family: 'Fira Code', monospace;
+      background: #020617;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: .5rem;
+      padding: .6rem;
+      color: #a5b4fc;
+      width: 100%;
+      resize: vertical;
+    }
+    .terminal {
+      background: #0a0a0a;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #22c55e;
+      font-family: 'Fira Code', monospace;
+      border-radius: .5rem;
+      padding: .6rem;
+      height: 150px;
+      overflow-y: auto;
+    }
+    .locked { opacity: 0.4; pointer-events:none; filter:grayscale(1); }
+    .quiz-card:hover { transform: translateY(-3px); }
+
+    /* Profile Dropdown Styles */
+    .profile-container {
+      position: relative;
+    }
+
+    .btn-profile {
+      background: #f59e0b;
+      color: #1e293b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-profile:hover {
+      background: #f97316;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .dropdown-username {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-top: 4px;
+    }
+
+    .dropdown-menu {
+      padding: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    .dropdown-item.logout {
+      border-top: 1px solid #334155;
+      color: #ff6b6b;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #f1f5f9;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+
+    .form-message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+
+    .form-message.active {
+      display: block;
+    }
+
+    .form-message.success {
+      background: #10b981;
+      color: #ecfdf5;
+    }
+
+    .form-message.error {
+      background: #ef4444;
+      color: #fecaca;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 10px 16px;
+      background: #f59e0b;
+      color: #1e293b;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+      background: #f97316;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+  <header class="bg-gradient-to-r from-fuchsia-700 via-purple-700 to-violet-700 shadow-lg py-4">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-trophy text-yellow-300 text-xl"></i>
+        <h1 class="text-2xl font-bold glow">TCL Challenge Arena</h1>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="px-4 py-2 rounded-lg bg-slate-900/70 hover:bg-slate-800 text-sm border border-slate-600/60 transition flex items-center">
+          <i class="fas fa-arrow-left mr-2"></i> Back to Forge
+        </a>
+
+        <!-- Profile Button -->
+        <div class="profile-container">
+          <button class="btn-profile" id="profileBtn">
+            <i class="fas fa-user"></i>
+            <span id="usernameDisplay">Profile</span>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              Logged in as
+              <div class="dropdown-username" id="usernameDisplayDropdown">User</div>
+            </div>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" id="resetPasswordBtn">
+                <i class="fas fa-key"></i>
+                Change Password
+              </button>
+              <button class="dropdown-item logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-6 py-8 flex-1">
+    <h2 class="text-2xl font-semibold mb-4 flex items-center"><i class="fas fa-lightbulb text-yellow-400 mr-2"></i> General Mini Projects</h2>
+    <div id="generalChallenges" class="grid sm:grid-cols-1 md:grid-cols-3 gap-6 mb-10"></div>
+
+    <h2 class="text-2xl font-semibold mb-4 flex items-center"><i class="fas fa-microchip text-green-400 mr-2"></i> PD-Based Projects</h2>
+    <div id="pdChallenges" class="grid sm:grid-cols-1 md:grid-cols-3 gap-6 mb-10"></div>
+
+    <h2 class="text-2xl font-semibold mb-4 flex items-center"><i class="fas fa-question-circle text-pink-400 mr-2"></i> TCL Quizzes</h2>
+    <div id="quizContainer" class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </main>
+
+  <footer class="py-5 text-center text-slate-500 border-t border-slate-800 text-sm">
+    <p>Made with 💜 by <span class="text-violet-400 font-semibold">Kunal Saraswat</span> | TCL Forge © 2025</p>
+  </footer>
+
+  <!-- Reset Password Modal -->
+  <div class="modal" id="resetModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Change Password</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" class="form-input" id="oldPassword" placeholder="Enter current password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+      </div>
+
+      <div class="form-message" id="resetMessage"></div>
+      <button class="btn-submit" onclick="resetPassword()">Update Password</button>
+    </div>
+  </div>
+
+<script>
+// Initialize auth and profile functionality
+document.addEventListener("DOMContentLoaded", async () => {
+  const token = localStorage.getItem("access");
+  const email = localStorage.getItem("email");
+
+  if (!token) {
+    // Redirect to login if no token
+    window.location.href = "/";
+    return;
+  }
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.username) {
+      document.getElementById("usernameDisplay").textContent = data.username;
+      document.getElementById("usernameDisplayDropdown").textContent = data.username;
+    } else {
+      const user = email ? email.split("@")[0] : "User";
+      document.getElementById("usernameDisplay").textContent = user;
+      document.getElementById("usernameDisplayDropdown").textContent = user;
+    }
+  } catch (err) {
+    const user = email ? email.split("@")[0] : "User";
+    document.getElementById("usernameDisplay").textContent = user;
+    document.getElementById("usernameDisplayDropdown").textContent = user;
+  }
+
+  // Initialize challenges
+  initializeChallenges();
+});
+
+/* ---------- Challenge Data ---------- */
+const generalChallenges=[
+ {title:"File Parser",desc:"Parse a text file and count the number of words or lines.",hint:"Use 'set fh [open filename r]' and 'gets' to read lines.",expected:["open","gets","close"]},
+ {title:"Digital Clock",desc:"Display the current time and refresh every second.",hint:"Use 'clock format [clock seconds]'.",expected:["clock","format"]},
+ {title:"List Processor",desc:"Sort and reverse a list dynamically.",hint:"Use 'lsort' and 'foreach'.",expected:["lsort","foreach"]}
+];
+const pdChallenges=[
+ {title:"SDC Parser",desc:"Extract all create_clock statements.",hint:"Use 'regexp' to match 'create_clock'.",expected:["regexp","create_clock"]},
+ {title:"Lib File Analyzer",desc:"Count total cell definitions in .lib file.",hint:"Look for 'cell (' patterns.",expected:["regexp","cell"]},
+ {title:"Log Summary Generator",desc:"Summarize warnings/errors from logs.",hint:"Use 'regexp' and 'incr'.",expected:["regexp","incr"]}
+];
+const quizzes=[ /* same quiz list as before */
+ {q:"Which command reads a line from an open file?",a:"gets"},
+ {q:"Which command is used to print output in TCL?",a:"puts"},
+ {q:"How do you concatenate lists in TCL?",a:"concat"},
+ {q:"What does 'info vars' return?",a:"list of variables"},
+ {q:"Which keyword defines a procedure?",a:"proc"},
+ {q:"How to get system time in TCL?",a:"clock seconds"},
+ {q:"Which command sorts lists?",a:"lsort"},
+ {q:"How to check equality in expr?",a:"=="},
+ {q:"Which command removes a variable?",a:"unset"},
+ {q:"How do you get script arguments?",a:"argv"},
+ {q:"What does 'create_clock' define in an SDC file?",a:"clock constraint"},
+ {q:"Which format defines standard cell delays?",a:"liberty"},
+ {q:"Which command extracts timing info from log?",a:"regexp"},
+ {q:"What does 'set_input_delay' do?",a:"defines input delay constraint"},
+ {q:"Which file holds netlist info?",a:"verilog"},
+ {q:"How to count warning lines in a log?",a:"incr count"},
+ {q:"Which Tcl command parses .lib files efficiently?",a:"regexp"},
+ {q:"How to iterate cells in TCL?",a:"foreach"},
+ {q:"Which file format defines constraints?",a:"sdc"},
+ {q:"What command reads file lines?",a:"gets"}
+];
+
+/* ---------- Card Builder ---------- */
+function makeChallengeCard(data,idx,type){
+ return `
+ <div class="glass p-5 rounded-xl transition-all ${idx>0&&!getUnlocked(type,idx)?'locked':''}" id="${type}-ch-${idx}">
+  <h3 class="text-lg font-semibold mb-1 text-violet-300"><i class="fas fa-bolt mr-1"></i>${data.title}</h3>
+  <p class="text-sm text-slate-400 mb-3">${data.desc}</p>
+  <textarea class="editor h-32" id="${type}-editor-${idx}" placeholder="# Write your TCL code here..."></textarea>
+  <div class="mt-3 flex justify-between items-center">
+   <button onclick="runChallenge('${type}',${idx})" class="px-3 py-1 rounded bg-gradient-to-r from-fuchsia-600 to-violet-600 text-xs">Run</button>
+   <span id="${type}-score-${idx}" class="text-xs text-slate-400">Score: ${getScore(type,idx)}</span>
+  </div>
+  <div class="terminal mt-3 text-xs" id="${type}-output-${idx}">Ready...</div>
+ </div>`;
+}
+function getUnlocked(type,idx){return localStorage.getItem(`${type}-unlocked-${idx}`)==='true'||idx===0;}
+function unlock(type,idx){localStorage.setItem(`${type}-unlocked-${idx}`,'true');}
+function getScore(type,idx){return localStorage.getItem(`${type}-score-${idx}`)||0;}
+
+/* ---------- Initialize Challenges ---------- */
+function initializeChallenges(){
+ document.getElementById("generalChallenges").innerHTML=generalChallenges.map((c,i)=>makeChallengeCard(c,i,'gen')).join('');
+ document.getElementById("pdChallenges").innerHTML=pdChallenges.map((c,i)=>makeChallengeCard(c,i,'pd')).join('');
+ document.getElementById("quizContainer").innerHTML=quizzes.map((q,i)=>`
+ <div class="glass quiz-card p-4 rounded-xl transition-all">
+  <p class="text-sm mb-2">${i+1}. ${q.q}</p>
+  <input type="text" id="quiz-${i}" placeholder="Your answer..." class="bg-slate-800 border border-slate-700 rounded-md px-3 py-1 text-xs w-full mb-2 focus:ring-1 focus:ring-violet-500 outline-none">
+  <button onclick="checkQuiz(${i})" class="px-3 py-1 rounded-md bg-fuchsia-600 text-xs hover:bg-fuchsia-500">Check</button>
+  <span id="quiz-result-${i}" class="text-xs ml-2"></span>
+ </div>`).join('');
+}
+
+/* ---------- Smart Evaluator ---------- */
+function runChallenge(type,idx){
+ const challenge=type==='gen'?generalChallenges[idx]:pdChallenges[idx];
+ const code=document.getElementById(`${type}-editor-${idx}`).value.trim();
+ const out=document.getElementById(`${type}-output-${idx}`);
+ const scoreEl=document.getElementById(`${type}-score-${idx}`);
+ if(!code){out.textContent="⚠️ No code entered.";return;}
+ let score=0;let feedback=[];
+ // keyword coverage
+ challenge.expected.forEach(k=>{if(code.includes(k))score+=25/challenge.expected.length;else feedback.push(`🔹 Missing: ${k}`);});
+ // structure scoring
+ if(/proc\s+\w+/.test(code))score+=10;
+ if(/if\s*{/.test(code))score+=8;
+ if(/while|foreach/.test(code))score+=8;
+ if(/open\s|\sclose/.test(code))score+=10;
+ if(/regexp/.test(code))score+=8;
+ if(code.length>80)score+=10;
+ // diversity
+ const uniqueCmds=(code.match(/\b[a-zA-Z_]+\b/g)||[]).filter((v,i,a)=>a.indexOf(v)==i);
+ score+=Math.min(uniqueCmds.length*0.5,10);
+ score=Math.min(100,Math.round(score));
+ localStorage.setItem(`${type}-score-${idx}`,score);
+ scoreEl.textContent=`Score: ${score}`;
+ if(score>=70){unlock(type,idx+1);}
+ out.textContent=
+  score>=90?"🏆 Perfect! Well structured TCL code."
+  :score>=70?`✅ Good work!\n${feedback.join("\n")||'Minor improvements possible.'}`
+  :`⚠️ Needs improvement.\nHint: ${challenge.hint}\n${feedback.join("\n")}`;
+}
+
+/* ---------- Quiz Checker ---------- */
+function checkQuiz(i){
+ const input=document.getElementById(`quiz-${i}`).value.trim().toLowerCase();
+ const correct=quizzes[i].a.toLowerCase();
+ const res=document.getElementById(`quiz-result-${i}`);
+ if(input===correct){res.textContent="✅ Correct!";res.className="text-green-400 text-xs ml-2";}
+ else{res.textContent=`❌ Hint: like "${correct}"`;res.className="text-yellow-400 text-xs ml-2";}
+}
+
+/* ---------- Profile dropdown functionality ---------- */
+document.getElementById("profileBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  document.getElementById("profileDropdown").classList.toggle("active");
+});
+
+document.addEventListener("click", () => {
+  document.getElementById("profileDropdown").classList.remove("active");
+});
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.clear();
+  window.location.href = "/";
+});
+
+// Reset password modal
+document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+  document.getElementById("profileDropdown").classList.remove("active");
+  document.getElementById("resetModal").classList.add("active");
+});
+
+document.getElementById("closeModal").addEventListener("click", () => {
+  document.getElementById("resetModal").classList.remove("active");
+});
+
+document.getElementById("resetModal").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("resetModal")) {
+    document.getElementById("resetModal").classList.remove("active");
+  }
+});
+
+// Password reset function
+async function resetPassword() {
+  const oldPass = document.getElementById("oldPassword").value.trim();
+  const newPass = document.getElementById("newPassword").value.trim();
+  const confirmPass = document.getElementById("confirmPassword").value.trim();
+  const msgEl = document.getElementById("resetMessage");
+
+  if (!oldPass || !newPass || !confirmPass) {
+    showMessage(msgEl, "All fields are required.", "error");
+    return;
+  }
+
+  if (newPass !== confirmPass) {
+    showMessage(msgEl, "New passwords do not match.", "error");
+    return;
+  }
+
+  if (newPass.length < 8) {
+    showMessage(msgEl, "Password must be at least 8 characters.", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/auth-reset-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("access"),
+      },
+      body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      showMessage(msgEl, "Password updated successfully!", "success");
+      setTimeout(() => {
+        document.getElementById("resetModal").classList.remove("active");
+        document.getElementById("oldPassword").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+        msgEl.classList.remove("active");
+      }, 1500);
+    } else {
+      showMessage(msgEl, data.error || "Failed to update password.", "error");
+    }
+  } catch (err) {
+    showMessage(msgEl, "Server error. Please try again.", "error");
+  }
+}
+
+function showMessage(el, text, type) {
+  el.textContent = text;
+  el.className = `form-message active ${type}`;
+}
+
+// Make functions available globally
+window.runChallenge = runChallenge;
+window.checkQuiz = checkQuiz;
+window.resetPassword = resetPassword;
+</script>
+</body>
+</html>

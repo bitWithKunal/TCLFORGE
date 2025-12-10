@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCL Live Runner | TCL Forge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #0f172a, #020617);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      overflow-x: hidden;
+    }
+    .glass {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      backdrop-filter: blur(16px);
+      border-radius: 0.9rem;
+    }
+    .glow {
+      text-shadow: 0 0 10px #c084fc, 0 0 24px #7c3aed;
+    }
+    .editor {
+      font-family: "Fira Code", monospace;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+    }
+    .terminal {
+      background: #020617;
+      color: #22c55e;
+      font-family: "Fira Code", monospace;
+      height: 280px;
+      overflow-y: auto;
+      padding: 12px;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 0.82rem;
+      line-height: 1.2rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .status-dot {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 999px;
+    }
+
+    /* Profile Dropdown Styles */
+    .profile-container {
+      position: relative;
+    }
+
+    .btn-profile {
+      background: #f59e0b;
+      color: #1e293b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-profile:hover {
+      background: #f97316;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .dropdown-username {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-top: 4px;
+    }
+
+    .dropdown-menu {
+      padding: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    .dropdown-item.logout {
+      border-top: 1px solid #334155;
+      color: #ff6b6b;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #f1f5f9;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+
+    .form-message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+
+    .form-message.active {
+      display: block;
+    }
+
+    .form-message.success {
+      background: #10b981;
+      color: #ecfdf5;
+    }
+
+    .form-message.error {
+      background: #ef4444;
+      color: #fecaca;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 10px 16px;
+      background: #f59e0b;
+      color: #1e293b;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+      background: #f97316;
+    }
+  </style>
+</head>
+
+<body class="text-slate-100 flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-fuchsia-700 via-purple-700 to-violet-700 shadow-lg py-4">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-900/40 border border-yellow-300/40 shadow-md">
+          <i class="fas fa-terminal text-yellow-300 text-lg"></i>
+        </span>
+        <div>
+          <h1 class="text-2xl font-bold glow leading-tight">TCL Live Runner</h1>
+          <p class="text-xs text-slate-200/80 -mt-0.5">
+            Interactive TCL playground powered by TCL Forge
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span id="engine-badge" class="hidden md:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/40 border border-emerald-400/60 text-xs">
+          <span class="status-dot bg-amber-400 animate-pulse"></span>
+          <span class="font-mono">Engine: Initializing…</span>
+        </span>
+        <a href="index.html"
+           class="px-4 py-2 rounded-lg bg-slate-900/70 hover:bg-slate-900 text-xs sm:text-sm flex items-center border border-slate-600/60 transition">
+          <i class="fas fa-arrow-left mr-2"></i> Back to Forge
+        </a>
+
+        <!-- Profile Button -->
+        <div class="profile-container">
+          <button class="btn-profile" id="profileBtn">
+            <i class="fas fa-user"></i>
+            <span id="usernameDisplay">Profile</span>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              Logged in as
+              <div class="dropdown-username" id="usernameDisplayDropdown">User</div>
+            </div>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" id="resetPasswordBtn">
+                <i class="fas fa-key"></i>
+                Change Password
+              </button>
+              <button class="dropdown-item logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-1 container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+
+      <!-- Left: Editor -->
+      <section class="glass p-4 sm:p-5 shadow-xl shadow-violet-900/40">
+        <!-- Top bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-lg font-semibold flex items-center gap-2">
+              <i class="fas fa-code text-yellow-400"></i>
+              TCL Code Space
+            </h2>
+            <p class="text-xs text-slate-400">
+              Write TCL, hit <span class="font-mono">Ctrl+Enter</span> or click Run
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button id="snippet-hello" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 flex items-center gap-1">
+              <i class="fas fa-bolt text-yellow-400"></i> Hello TCL
+            </button>
+            <button id="snippet-vars" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600">
+              Variables & expr
+            </button>
+            <button id="snippet-list" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600">
+              Lists & Arrays
+            </button>
+            <button id="snippet-proc" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600">
+              Proc Demo
+            </button>
+          </div>
+        </div>
+
+        <!-- Editor -->
+        <div class="relative rounded-xl overflow-hidden border border-slate-700/80 bg-slate-900/90">
+          <div class="flex items-center justify-between px-3 py-2 border-b border-slate-700/80 bg-slate-900/90">
+            <div class="flex items-center gap-2 text-xs text-slate-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span class="font-mono">main.tcl</span>
+            </div>
+            <div class="flex items-center gap-2 text-[10px] text-slate-500">
+              <i class="fas fa-keyboard"></i>
+              <span>Ctrl+Enter to Run</span>
+            </div>
+          </div>
+          <textarea
+            id="tcl-editor"
+            class="editor w-full h-[340px] bg-transparent text-slate-100 text-sm leading-6 p-3 sm:p-4 focus:outline-none focus:ring-0"
+            spellcheck="false"
+            placeholder="# Write your TCL code here..."
+          ></textarea>
+        </div>
+
+        <!-- Controls -->
+        <div class="mt-4 flex flex-wrap justify-between items-center gap-3">
+          <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+            <span class="inline-flex items-center gap-1">
+              <i class="fas fa-circle text-xs text-emerald-400"></i> <span id="status-text">Ready</span>
+            </span>
+
+            <!-- Mini Stats -->
+            <div class="flex flex-wrap gap-1 sm:gap-2 ml-2">
+              <span id="execTime" class="px-2 py-1 rounded-full bg-slate-800/60 border border-slate-700 text-[10px] text-slate-300 flex items-center gap-1">
+                <i class="fas fa-stopwatch text-fuchsia-400"></i> 0.00ms
+              </span>
+              <span id="lineCount" class="px-2 py-1 rounded-full bg-slate-800/60 border border-slate-700 text-[10px] text-slate-300 flex items-center gap-1">
+                <i class="fas fa-code text-yellow-400"></i> 0 lines
+              </span>
+              <span id="memoryUsed" class="px-2 py-1 rounded-full bg-slate-800/60 border border-slate-700 text-[10px] text-slate-300 flex items-center gap-1">
+                <i class="fas fa-memory text-emerald-400"></i> 2.3MB
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="beautifyBtn" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-[11px] sm:text-xs flex items-center gap-1 border border-slate-600 transition">
+              <i class="fas fa-magic"></i> Beautify
+            </button>
+            <button id="clearBtn" class="px-3 sm:px-4 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-[11px] sm:text-xs flex items-center gap-1 border border-slate-600 transition">
+              <i class="fas fa-eraser"></i> Clear
+            </button>
+            <button id="runBtn" class="px-3 sm:px-4 py-1.5 rounded-md bg-gradient-to-r from-fuchsia-600 to-violet-600 hover:from-fuchsia-500 hover:to-violet-500 text-[11px] sm:text-xs flex items-center gap-1 shadow-lg shadow-fuchsia-700/40 transition disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="fas fa-play"></i> Run Code
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Terminal -->
+      <section class="glass p-4 sm:p-5 shadow-xl shadow-violet-900/40 flex flex-col">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-lg font-semibold flex items-center gap-2">
+              <i class="fas fa-display text-emerald-400"></i>
+              Output Terminal
+            </h2>
+            <p class="text-xs text-slate-400">
+              Shows <span class="font-mono">puts</span>, expression results & errors
+            </p>
+          </div>
+          <button id="copyOutputBtn" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-[11px] flex items-center gap-1 border border-slate-600 transition">
+            <i class="fas fa-copy text-slate-300"></i> Copy
+          </button>
+        </div>
+
+        <div id="output" class="terminal">
+          ⚙️ Initializing TCL Forge Engine…<br/>
+        </div>
+
+        <!-- Small legend -->
+        <div class="mt-3 flex flex-wrap justify-between items-center gap-2 text-[11px] text-slate-500">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1">
+              <span class="text-emerald-400">●</span> stdout
+            </span>
+            <span class="inline-flex items-center gap-1">
+              <span class="text-red-400">●</span> error
+            </span>
+          </div>
+          <span id="last-run" class="italic">Last run: never</span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-4 text-center text-xs sm:text-sm text-slate-500 border-t border-slate-800">
+    <p>Made with 💜 by <span class="text-violet-400 font-semibold">Kunal Saraswat</span> | TCL Forge © 2025</p>
+  </footer>
+
+  <!-- Reset Password Modal -->
+  <div class="modal" id="resetModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Change Password</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" class="form-input" id="oldPassword" placeholder="Enter current password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+      </div>
+
+      <div class="form-message" id="resetMessage"></div>
+      <button class="btn-submit" onclick="resetPassword()">Update Password</button>
+    </div>
+  </div>
+
+  <!-- Mini Tcl-like Interpreter & IDE Logic -->
+  <script>
+
+      class MiniTclEnv {
+  constructor() {
+    this.vars = {};
+    this.arrays = {};
+    this.procs = {};
+    this.dicts = {};
+    this._returnValue = null;
+  }
+
+  eval(code) {
+    const lines = code.split(/\r?\n/);
+    let out = "";
+    for (let raw of lines) {
+      let line = raw.trim();
+      if (!line || line.startsWith("#")) continue;
+
+      // Expand command substitutions like [expr 3+2] or [list a b]
+      line = this._expandCommandSubst(line);
+      line = this._resolveInterpolations(line);
+
+      const result = this._execLine(line);
+      if (this._returnValue !== null) return this._returnValue; // for return inside procs
+      if (result) out += result + "\n";
+    }
+    return out.trimEnd();
+  }
+
+  // ---------- Substitutions ----------
+  _expandCommandSubst(line) {
+    return line.replace(/\[([^\[\]]+)\]/g, (_, innerCmd) => {
+      try {
+        const result = this.eval(innerCmd);
+        return result || "";
+      } catch {
+        return "[error]";
+      }
+    });
+  }
+
+  _resolveInterpolations(text) {
+    return text.replace(/\$([A-Za-z0-9_:]+(\(.+?\))?)/g, (_, full) => this._resolveValue("$" + full));
+  }
+
+  _resolveValue(token) {
+    if (token.startsWith("$")) {
+      const name = token.slice(1);
+      const m = name.match(/^([A-Za-z0-9_:]+)\((.+)\)$/);
+      if (m) return this.arrays[m[1]]?.[m[2]] ?? "";
+      return this.vars[name] ?? "";
+    }
+    return token;
+  }
+
+  // ---------- Tokenizer ----------
+  _tokenize(line) {
+    const tokens = [];
+    let current = "";
+    let inQuotes = false;
+    let inBraces = false;
+    for (let ch of line) {
+      if (ch === '"' && !inBraces) { inQuotes = !inQuotes; continue; }
+      if (ch === "{" && !inQuotes) { if (!inBraces) { inBraces = true; continue; } }
+      if (ch === "}" && !inQuotes) { if (inBraces) { inBraces = false; continue; } }
+      if (!inQuotes && !inBraces && /\s/.test(ch)) {
+        if (current.length) { tokens.push(current); current = ""; }
+      } else current += ch;
+    }
+    if (current.length) tokens.push(current);
+    return tokens;
+  }
+
+  // ---------- Evaluator ----------
+  _execLine(line) {
+  const tk = this._tokenize(line);
+  if (!tk.length) return "";
+  const cmd = tk[0];
+
+  switch (cmd) {
+    // -------- Core commands --------
+    case "set": {
+      const name = tk[1];
+      const val = tk.slice(2).join(" ");
+      this.vars[name] = this._resolveInterpolations(val);
+      return "";
+    }
+
+    case "puts": {
+      let text = tk.slice(1).join(" ");
+      text = this._resolveInterpolations(text);
+      return text;
+    }
+
+    case "expr": {
+      const exprBody = tk.slice(1).join(" ");
+      return this._evalExpr(exprBody);
+    }
+
+    case "list": {
+      return tk.slice(1).map(t => this._resolveInterpolations(t)).join(" ");
+    }
+
+    case "lappend": {
+      const name = tk[1];
+      const vals = tk.slice(2).map(v => this._resolveInterpolations(v));
+      const existing = this.vars[name] ? this.vars[name].split(/\s+/) : [];
+      this.vars[name] = existing.concat(vals).join(" ");
+      return "";
+    }
+
+    case "array": {
+      const sub = tk[1];
+      if (sub === "set") {
+        const arr = tk[2];
+        const pairs = tk.slice(3).join(" ").split(/\s+/);
+        this.arrays[arr] = this.arrays[arr] || {};
+        for (let i = 0; i < pairs.length; i += 2)
+          this.arrays[arr][pairs[i]] = this._resolveInterpolations(pairs[i + 1] ?? "");
+        return "";
+      }
+      if (sub === "get") {
+        const arr = this.arrays[tk[2]] || {};
+        return Object.entries(arr).map(([k, v]) => `${k} ${v}`).join(" ");
+      }
+      break;
+    }
+
+    // -------- Dict --------
+    case "dict": {
+      const sub = tk[1];
+      if (sub === "create") {
+        const pairs = tk.slice(2);
+        const dict = {};
+        for (let i = 0; i < pairs.length; i += 2)
+          dict[pairs[i]] = this._resolveInterpolations(pairs[i + 1] ?? "");
+        return Object.entries(dict).map(([k, v]) => `${k} ${v}`).join(" ");
+      }
+      if (sub === "get") {
+        const dictStr = tk[2];
+        const key = tk[3];
+        const dictObj = this._parseDict(dictStr);
+        return dictObj[key] ?? "";
+      }
+      break;
+    }
+
+    // -------- Flow Control --------
+    case "if": {
+      const cond = this._evalExpr(this._resolveInterpolations(tk[1]));
+      const thenPart = tk[2] || "";
+      const elseIdx = tk.indexOf("else");
+      const elsePart = elseIdx !== -1 ? tk.slice(elseIdx + 1).join(" ") : null;
+      if (parseFloat(cond)) return this.eval(thenPart);
+      else if (elsePart) return this.eval(elsePart);
+      return "";
+    }
+
+    case "while": {
+      const condExpr = tk[1];
+      const body = tk.slice(2).join(" ");
+      while (parseFloat(this._evalExpr(this._resolveInterpolations(condExpr)))) {
+        const res = this.eval(body);
+        if (this._returnValue !== null) return this._returnValue;
+      }
+      return "";
+    }
+
+    case "for": {
+      const init = tk[1], cond = tk[2], step = tk[3], body = tk.slice(4).join(" ");
+      this.eval(init);
+      while (parseFloat(this._evalExpr(this._resolveInterpolations(cond)))) {
+        const res = this.eval(body);
+        if (this._returnValue !== null) return this._returnValue;
+        this.eval(step);
+      }
+      return "";
+    }
+
+    case "foreach": {
+      const varName = tk[1];
+      const listVals = this._resolveInterpolations(tk[2]).split(/\s+/);
+      const body = tk.slice(3).join(" ");
+      for (let v of listVals) {
+        this.vars[varName] = v;
+        const res = this.eval(body);
+        if (this._returnValue !== null) return this._returnValue;
+      }
+      return "";
+    }
+
+    case "return": {
+      const val = tk.slice(1).join(" ");
+      this._returnValue = this._resolveInterpolations(val);
+      return this._returnValue;
+    }
+
+    // -------- Procedure Definition --------
+    case "proc": {
+      const name = tk[1];
+      let argsRaw = tk[2] || "{}";
+      let body = tk.slice(3).join(" ");
+
+      // Strip braces if present
+      if (argsRaw.startsWith("{") && argsRaw.endsWith("}"))
+        argsRaw = argsRaw.slice(1, -1).trim();
+
+      const args = argsRaw.length ? argsRaw.split(/\s+/) : [];
+
+      this.procs[name] = { args, body };
+      return "";
+    }
+
+    // -------- Procedure Invocation --------
+    default: {
+      if (this.procs[cmd]) {
+        const p = this.procs[cmd];
+        const local = new MiniTclEnv();
+        local.vars = { ...this.vars };
+        local.arrays = JSON.parse(JSON.stringify(this.arrays));
+        // Defensive fix: only loop if args array exists
+        if (Array.isArray(p.args)) {
+          p.args.forEach((arg, i) => local.vars[arg] = this._resolveInterpolations(tk[i + 1] ?? ""));
+        }
+        const res = local.eval(p.body);
+        this.vars = { ...this.vars, ...local.vars };
+        this.arrays = { ...this.arrays, ...local.arrays };
+        return res;
+      }
+      return `? Unknown command: ${cmd}`;
+    }
+  }
+
+
+  }
+
+  // ---------- Utilities ----------
+  _evalExpr(expr) {
+    const replaced = expr.replace(/\$([A-Za-z0-9_:]+)/g, (_, n) => this.vars[n] ?? 0);
+    if (!/^[0-9+\-*/%()\s<>=!&|.]+$/.test(replaced)) throw new Error("Bad expr");
+    // eslint-disable-next-line no-eval
+    return eval(replaced).toString();
+  }
+
+  _parseDict(str) {
+    const parts = str.trim().split(/\s+/);
+    const obj = {};
+    for (let i = 0; i < parts.length; i += 2) obj[parts[i]] = parts[i + 1];
+    return obj;
+  }
+}
+
+    // Initialize auth and profile functionality
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const email = localStorage.getItem("email");
+
+      if (!token) {
+        // Redirect to login if no token
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.username) {
+          document.getElementById("usernameDisplay").textContent = data.username;
+          document.getElementById("usernameDisplayDropdown").textContent = data.username;
+        } else {
+          const user = email ? email.split("@")[0] : "User";
+          document.getElementById("usernameDisplay").textContent = user;
+          document.getElementById("usernameDisplayDropdown").textContent = user;
+        }
+      } catch (err) {
+        const user = email ? email.split("@")[0] : "User";
+        document.getElementById("usernameDisplay").textContent = user;
+        document.getElementById("usernameDisplayDropdown").textContent = user;
+      }
+
+      // Initialize TCL engine
+      initializeTCL();
+    });
+
+    function initializeTCL() {
+      const editor = document.getElementById("tcl-editor"), output = document.getElementById("output");
+      const runBtn = document.getElementById("runBtn"), clearBtn = document.getElementById("clearBtn"), beautifyBtn = document.getElementById("beautifyBtn");
+      const copyOutputBtn = document.getElementById("copyOutputBtn"), statusText = document.getElementById("status-text"), lastRun = document.getElementById("last-run");
+      const engineBadge = document.getElementById("engine-badge");
+      const execTime = document.getElementById("execTime"), lineCount = document.getElementById("lineCount"), memoryUsed = document.getElementById("memoryUsed");
+      const snippetHello = document.getElementById("snippet-hello"), snippetVars = document.getElementById("snippet-vars"), snippetList = document.getElementById("snippet-list"), snippetProc = document.getElementById("snippet-proc");
+
+      let env = null;
+      function logToTerminal(t, type = "info") {
+        const color = type === "error" ? "#f87171" : "#22c55e";
+        const time = new Date().toLocaleTimeString();
+        output.innerHTML += `<span style="color:#64748b;">[${time}]</span> <span style="color:${color};">${t}</span><br/>`;
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function initEngine() {
+        output.innerHTML = "⚙️ Initializing TCL Forge Engine…<br/>";
+        env = new MiniTclEnv();
+        statusText.textContent = "Engine ready (Mini Tcl)";
+        engineBadge.classList.remove("hidden");
+        engineBadge.querySelector(".status-dot").classList.replace("bg-amber-400", "bg-emerald-400");
+        engineBadge.querySelector(".font-mono").textContent = "Engine: Mini Tcl (Browser)";
+        logToTerminal("TCL Forge engine loaded. Commands: set, puts, expr, list, array, proc.", "info");
+      }
+
+      function runCode() {
+        const code = editor.value.trim(); if (!code) return logToTerminal("No code entered.", "error");
+        if (!env) initEngine();
+        statusText.textContent = "Running…";
+        const lines = code.split(/\r?\n/).filter(l => l.trim().length > 0).length;
+        const start = performance.now();
+        try {
+          const result = env.eval(code);
+          const end = performance.now();
+          execTime.innerHTML = `<i class='fas fa-stopwatch text-fuchsia-400'></i> ${(end - start).toFixed(2)}ms`;
+          lineCount.innerHTML = `<i class='fas fa-code text-yellow-400'></i> ${lines} lines`;
+          memoryUsed.innerHTML = `<i class='fas fa-memory text-emerald-400'></i> ${(2.3 + Math.random() * 0.2).toFixed(1)}MB`;
+          logToTerminal(result || "(no output)");
+          lastRun.textContent = "Last run: " + new Date().toLocaleTimeString();
+        } catch (e) { logToTerminal(e.message || String(e), "error"); }
+        statusText.textContent = "Ready";
+      }
+
+      runBtn.addEventListener("click", runCode);
+      clearBtn.addEventListener("click", () => { editor.value = ""; output.innerHTML = ""; statusText.textContent = "Cleared"; setTimeout(() => statusText.textContent = "Ready", 600); });
+      beautifyBtn.addEventListener("click", () => { editor.value = editor.value.split(/\r?\n/).map(l => l.trimEnd()).join("\n").trimStart(); statusText.textContent = "Beautified"; setTimeout(() => statusText.textContent = "Ready", 600); });
+      copyOutputBtn.addEventListener("click", async () => { try { await navigator.clipboard.writeText(output.innerText); copyOutputBtn.innerHTML = '<i class="fas fa-check text-emerald-400"></i> Copied'; setTimeout(() => copyOutputBtn.innerHTML = '<i class="fas fa-copy text-slate-300"></i> Copy', 1000); } catch { logToTerminal("Clipboard not available", "error"); } });
+      editor.addEventListener("keydown", e => { if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); runCode(); } });
+
+      snippetHello.onclick = () => editor.value = `puts "Hello from TCL Forge!"\nset who "Kunal"\nputs "Welcome, $who!"`;
+      snippetVars.onclick = () => editor.value = `set a 10\nset b 20\nputs "a = $a, b = $b"\nset sum [expr {$a + $b}]\nputs "Sum = $sum"`;
+      snippetList.onclick = () => editor.value = `set fruits [list apple banana orange]\nlappend fruits mango\nputs "Fruits: $fruits"\n\narray set colors {apple red banana yellow orange orange}\nputs "Apple color: $colors(apple)"\nputs "All colors: [array get colors]"`;
+      snippetProc.onclick = () => editor.value = `proc greet {name} {\n    puts "Hello, $name!"\n}\n\nproc add {x y} {\n    set s [expr {$x + $y}]\n    puts "Sum of $x and $y is $s"\n}\n\ngreet "TCL Forge"\nadd 7 13`;
+
+      editor.value = `# Welcome to TCL Live Runner (Mini Engine)\nputs "Hello from TCL Forge!"\nset a 10\nset b 32\nputs "a = $a, b = $b"\nset sum [expr {$a + $b}]\nputs "Sum = $sum"`;
+      initEngine();
+    }
+
+    // Profile dropdown functionality
+    document.getElementById("profileBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.getElementById("profileDropdown").classList.toggle("active");
+    });
+
+    document.addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "/";
+    });
+
+    // Reset password modal
+    document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+      document.getElementById("resetModal").classList.add("active");
+    });
+
+    document.getElementById("closeModal").addEventListener("click", () => {
+      document.getElementById("resetModal").classList.remove("active");
+    });
+
+    document.getElementById("resetModal").addEventListener("click", (e) => {
+      if (e.target === document.getElementById("resetModal")) {
+        document.getElementById("resetModal").classList.remove("active");
+      }
+    });
+
+    // Password reset function
+    async function resetPassword() {
+      const oldPass = document.getElementById("oldPassword").value.trim();
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPassword").value.trim();
+      const msgEl = document.getElementById("resetMessage");
+
+      if (!oldPass || !newPass || !confirmPass) {
+        showMessage(msgEl, "All fields are required.", "error");
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showMessage(msgEl, "New passwords do not match.", "error");
+        return;
+      }
+
+      if (newPass.length < 8) {
+        showMessage(msgEl, "Password must be at least 8 characters.", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/auth-reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("access"),
+          },
+          body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showMessage(msgEl, "Password updated successfully!", "success");
+          setTimeout(() => {
+            document.getElementById("resetModal").classList.remove("active");
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+            msgEl.classList.remove("active");
+          }, 1500);
+        } else {
+          showMessage(msgEl, data.error || "Failed to update password.", "error");
+        }
+      } catch (err) {
+        showMessage(msgEl, "Server error. Please try again.", "error");
+      }
+    }
+
+    function showMessage(el, text, type) {
+      el.textContent = text;
+      el.className = `form-message active ${type}`;
+    }
+
+    // Make functions available globally
+    window.resetPassword = resetPassword;
+  </script>
+</body>
+</html>

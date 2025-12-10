@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCL Notes Library | TCL Forge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      overflow-x: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .glow-text {
+      text-shadow: 0 0 10px #c084fc, 0 0 20px #9333ea;
+    }
+
+    /* Profile Dropdown Styles */
+    .profile-container {
+      position: relative;
+    }
+
+    .btn-profile {
+      background: #f59e0b;
+      color: #1e293b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-profile:hover {
+      background: #f97316;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .dropdown-username {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-top: 4px;
+    }
+
+    .dropdown-menu {
+      padding: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    .dropdown-item.logout {
+      border-top: 1px solid #334155;
+      color: #ff6b6b;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #f1f5f9;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+
+    .form-message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+
+    .form-message.active {
+      display: block;
+    }
+
+    .form-message.success {
+      background: #10b981;
+      color: #ecfdf5;
+    }
+
+    .form-message.error {
+      background: #ef4444;
+      color: #fecaca;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 10px 16px;
+      background: #f59e0b;
+      color: #1e293b;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+      background: #f97316;
+    }
+  </style>
+</head>
+
+<body class="text-slate-100 flex flex-col min-h-screen">
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-fuchsia-700 via-purple-700 to-violet-700 shadow-lg py-5">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-book-open text-yellow-300 text-xl"></i>
+        <h1 class="text-3xl font-extrabold glow-text tracking-wide">TCL Notes Library</h1>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="px-4 py-2 rounded-md bg-slate-800 hover:bg-slate-700 transition text-sm flex items-center">
+          <i class="fas fa-arrow-left mr-2"></i> Back to Forge
+        </a>
+
+        <!-- Profile Button -->
+        <div class="profile-container">
+          <button class="btn-profile" id="profileBtn">
+            <i class="fas fa-user"></i>
+            <span id="usernameDisplay">Profile</span>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              Logged in as
+              <div class="dropdown-username" id="usernameDisplayDropdown">User</div>
+            </div>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" id="resetPasswordBtn">
+                <i class="fas fa-key"></i>
+                Change Password
+              </button>
+              <button class="dropdown-item logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 container mx-auto px-6 py-8 fade-in">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-semibold flex items-center">
+          <i class="fas fa-folder-open mr-2 text-yellow-400"></i> Available Notes
+        </h2>
+        <p class="text-slate-400">Click "Open" to view PDF notes in a new tab.</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div id="stats" class="text-sm text-slate-300 hidden">
+          <span id="total-files">0 files</span>
+          <span class="mx-2">•</span>
+          <span id="total-size">0 B</span>
+        </div>
+        <div class="relative">
+          <input type="text" id="searchBox" placeholder="Search notes..."
+                 class="pl-10 pr-4 py-2 rounded-lg bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm w-64">
+          <i class="fas fa-search absolute left-3 top-2.5 text-slate-400"></i>
+        </div>
+      </div>
+    </div>
+
+    <div id="pdf-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="py-4 text-center text-sm text-slate-500 border-t border-slate-800">
+    <p>Made with 💜 by <span class="text-violet-400 font-semibold">Kunal Saraswat</span> | TCL Notes © 2025</p>
+  </footer>
+
+  <!-- Reset Password Modal -->
+  <div class="modal" id="resetModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Change Password</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" class="form-input" id="oldPassword" placeholder="Enter current password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+      </div>
+
+      <div class="form-message" id="resetMessage"></div>
+      <button class="btn-submit" onclick="resetPassword()">Update Password</button>
+    </div>
+  </div>
+
+  <script>
+    // Initialize auth and profile functionality
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const email = localStorage.getItem("email");
+
+      if (!token) {
+        // Redirect to login if no token
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.username) {
+          document.getElementById("usernameDisplay").textContent = data.username;
+          document.getElementById("usernameDisplayDropdown").textContent = data.username;
+        } else {
+          const user = email ? email.split("@")[0] : "User";
+          document.getElementById("usernameDisplay").textContent = user;
+          document.getElementById("usernameDisplayDropdown").textContent = user;
+        }
+      } catch (err) {
+        const user = email ? email.split("@")[0] : "User";
+        document.getElementById("usernameDisplay").textContent = user;
+        document.getElementById("usernameDisplayDropdown").textContent = user;
+      }
+
+      // Initialize notes library
+      initializeNotes();
+    });
+
+    // PDF Files array - Add your actual PDF filenames here
+    const pdfFiles = [
+      "TCL_Variables.pdf",
+      "TCL_Control_Flow.pdf",
+      "TCL_Procedures.pdf",
+      "TCL_File_IO.pdf",
+      "TCL_Arrays_Dicts.pdf",
+      "TCL_String_Manipulation.pdf",
+      "TCL_Expressions.pdf",
+      "TCL_Error_Handling.pdf",
+      "TCL_Best_Practices.pdf",
+      "TCL_PD_Scripts.pdf"
+    ];
+
+    const pdfFolder = "notes/";
+
+    // Format bytes to human readable
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 Bytes";
+      const sizes = ["Bytes", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(1024));
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
+    }
+
+    // Fetch actual file size dynamically
+    async function getFileSize(filePath) {
+      try {
+        const response = await fetch(filePath, { method: "HEAD" });
+        const size = response.headers.get("Content-Length");
+        return size ? parseInt(size) : 0;
+      } catch {
+        return 0;
+      }
+    }
+
+    async function displayPDFs(filter = "") {
+      const grid = document.getElementById("pdf-grid");
+      const searchBox = document.getElementById("searchBox");
+      const stats = document.getElementById("stats");
+      const totalFiles = document.getElementById("total-files");
+      const totalSize = document.getElementById("total-size");
+
+      grid.innerHTML = "";
+
+      const filtered = pdfFiles.filter(f => f.toLowerCase().includes(filter.toLowerCase()));
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p class='text-slate-400 text-center col-span-full mt-6'>No matching PDFs found.</p>`;
+        stats.classList.add("hidden");
+        return;
+      }
+
+      let totalBytes = 0;
+      const filePromises = filtered.map(async (file) => {
+        const filePath = pdfFolder + file;
+        const size = await getFileSize(filePath);
+        totalBytes += size;
+        return { file, size };
+      });
+
+      const fileData = await Promise.all(filePromises);
+
+      // Sort by filename
+      fileData.sort((a, b) => a.file.localeCompare(b.file));
+
+      fileData.forEach(({ file, size }) => {
+        const readableSize = size > 0 ? formatBytes(size) : "Unknown";
+        const modifiedDate = new Date().toLocaleDateString();
+
+        const card = document.createElement("div");
+        card.className = "glass-card rounded-xl p-5 flex flex-col justify-between cursor-pointer h-full";
+        card.innerHTML = `
+          <div class="flex-1">
+            <div class="flex items-start justify-between mb-3">
+              <i class="fas fa-file-pdf text-3xl text-red-400"></i>
+              <span class="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-300">${readableSize}</span>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 line-clamp-2" title="${file}">${file}</h3>
+            <div class="text-xs text-slate-400 space-y-1">
+              <div class="flex items-center">
+                <i class="fas fa-hashtag mr-2 text-xs"></i>
+                <span>Modified: ${modifiedDate}</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-700/50">
+            <a href="${pdfFolder + file}" target="_blank"
+               class="w-full px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-sm rounded-md transition flex items-center justify-center gap-2">
+              <i class="fas fa-external-link-alt"></i>
+              <span>Open PDF</span>
+            </a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Show statistics
+      stats.classList.remove("hidden");
+      totalFiles.textContent = `${filtered.length} file${filtered.length !== 1 ? 's' : ''}`;
+      totalSize.textContent = formatBytes(totalBytes);
+    }
+
+    // Live search
+    document.getElementById("searchBox").addEventListener("input", e => displayPDFs(e.target.value));
+
+    function initializeNotes() {
+      displayPDFs();
+    }
+
+    /* ---------- Profile dropdown functionality ---------- */
+    document.getElementById("profileBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.getElementById("profileDropdown").classList.toggle("active");
+    });
+
+    document.addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "/";
+    });
+
+    // Reset password modal
+    document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+      document.getElementById("resetModal").classList.add("active");
+    });
+
+    document.getElementById("closeModal").addEventListener("click", () => {
+      document.getElementById("resetModal").classList.remove("active");
+    });
+
+    document.getElementById("resetModal").addEventListener("click", (e) => {
+      if (e.target === document.getElementById("resetModal")) {
+        document.getElementById("resetModal").classList.remove("active");
+      }
+    });
+
+    // Password reset function
+    async function resetPassword() {
+      const oldPass = document.getElementById("oldPassword").value.trim();
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPassword").value.trim();
+      const msgEl = document.getElementById("resetMessage");
+
+      if (!oldPass || !newPass || !confirmPass) {
+        showMessage(msgEl, "All fields are required.", "error");
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showMessage(msgEl, "New passwords do not match.", "error");
+        return;
+      }
+
+      if (newPass.length < 8) {
+        showMessage(msgEl, "Password must be at least 8 characters.", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/auth-reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("access"),
+          },
+          body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showMessage(msgEl, "Password updated successfully!", "success");
+          setTimeout(() => {
+            document.getElementById("resetModal").classList.remove("active");
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+            msgEl.classList.remove("active");
+          }, 1500);
+        } else {
+          showMessage(msgEl, data.error || "Failed to update password.", "error");
+        }
+      } catch (err) {
+        showMessage(msgEl, "Server error. Please try again.", "error");
+      }
+    }
+
+    function showMessage(el, text, type) {
+      el.textContent = text;
+      el.className = `form-message active ${type}`;
+    }
+
+    // Make functions available globally
+    window.resetPassword = resetPassword;
+  </script>
+</body>
+</html>

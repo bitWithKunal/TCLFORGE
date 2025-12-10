@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCL Forge | Interactive Learning Platform</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Prism.js for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+
+<!-- Fuse.js for fuzzy search -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js" defer></script>
+
+<!-- ✅ jsPDF for Cheatsheet PDF Generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box {
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #94a3b8;
+      width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      outline: none;
+      width: 100%;
+    }
+
+    .navbar-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-live, .btn-challenges, .btn-manual, .btn-notes, .btn-interview, .btn-cheat, .btn-linkedin {
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-live { background: #10b981; }
+    .btn-challenges { background: #ec4899; }
+    .btn-manual { background: #6366f1; }
+    .btn-notes { background: #a855f7; }
+    .btn-interview { background: #0ea5e9; }
+    .btn-cheat { background: #06b6d4; }
+    .btn-linkedin { background: #0a66c2; }
+    /* 🔸 Golden TCL Tools button */
+.btn-tools {
+  background: linear-gradient(to right, #fbbf24, #f59e0b);
+  color: #1e293b;
+  padding: 9px 22px; /* slightly bigger */
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-tools:hover {
+  background: linear-gradient(to right, #f59e0b, #d97706);
+  transform: scale(1.03);
+}
+
+
+    .btn-live:hover, .btn-challenges:hover, .btn-manual:hover, .btn-notes:hover, .btn-interview:hover, .btn-cheat:hover, .btn-linkedin:hover {
+      opacity: 0.9;
+    }
+
+    .profile-container {
+      position: relative;
+    }
+
+    .btn-profile {
+      background: #f59e0b;
+      color: #1e293b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-profile:hover {
+      background: #f97316;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .dropdown-username {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-top: 4px;
+    }
+
+    .dropdown-menu {
+      padding: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    .dropdown-item i {
+      width: 16px;
+      text-align: center;
+    }
+
+    .dropdown-item.logout {
+      border-top: 1px solid #334155;
+      color: #ff6b6b;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 57px);
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 300px;
+      background: #1e293b;
+      border-right: 1px solid #334155;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .progress-section {
+      margin-bottom: 24px;
+      flex-shrink: 0;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+    }
+
+    .progress-bar {
+      background: #334155;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(to right, #fbbf24, #f59e0b);
+      height: 100%;
+      width: 0%;
+    }
+
+    .filter-section {
+      margin-bottom: 24px;
+      flex-shrink: 0;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      display: block;
+    }
+
+    .filter-select {
+      width: 100%;
+      padding: 8px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Enhanced sidebar scrollbar - THIS IS THE FIX */
+    .sidebar::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: #1e293b;
+      border-radius: 5px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 5px;
+      border: 2px solid #1e293b;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+
+    /* Firefox support */
+    .sidebar {
+      scrollbar-width: thin;
+      scrollbar-color: #475569 #1e293b;
+    }
+
+    .concepts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Hide scrollbar from concepts-list since sidebar handles it */
+    .concepts-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .concept-item {
+      padding: 12px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      background: transparent;
+      color: #e2e8f0;
+      border: none;
+      text-align: left;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+    }
+
+    .concept-item:hover {
+      background: #334155;
+    }
+
+    .concept-item.active {
+      background: #334155;
+    }
+
+    .concept-stars {
+      color: #fbbf24;
+      font-size: 12px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0f172a;
+    }
+
+    .header {
+      background: linear-gradient(to right, #334155, #1e293b);
+      padding: 24px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #f1f5f9;
+      margin-bottom: 12px;
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-badge {
+      background: #475569;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    .header-level {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #fbbf24;
+      font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #334155;
+      padding: 0 24px;
+      background: #0f172a;
+    }
+
+    .tab {
+      padding: 16px 24px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: #fbbf24;
+      border-bottom-color: #fbbf24;
+    }
+
+    .tab:hover:not(.active) {
+      color: #cbd5e1;
+    }
+
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .takeaway-section {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #334155;
+    }
+
+    .takeaway-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fbbf24;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .takeaway-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
+
+    .takeaway-item {
+      background: #1e293b;
+      border-left: 4px solid #fbbf24;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e2e8f0;
+    }
+
+    .takeaway-icon {
+      color: #10b981;
+      font-size: 16px;
+    }
+
+    .footer {
+      padding: 24px;
+      border-top: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn-nav {
+      padding: 10px 20px;
+      border-radius: 6px;
+      background: #334155;
+      color: #cbd5e1;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-nav:hover {
+      background: #475569;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #f1f5f9;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+
+    .form-message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+
+    .form-message.active {
+      display: block;
+    }
+
+    .form-message.success {
+      background: #10b981;
+      color: #ecfdf5;
+    }
+
+    .form-message.error {
+      background: #ef4444;
+      color: #fecaca;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 10px 16px;
+      background: #f59e0b;
+      color: #1e293b;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+      background: #f97316;
+    }
+
+    /* Enhanced UI Components */
+    .code-editor {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      background: #334155;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .code-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .code-body {
+      padding: 16px;
+    }
+
+    .code-input {
+      width: 100%;
+      min-height: 200px;
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+    }
+
+    .code-output {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .quiz-option {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      background: #334155;
+    }
+
+    .quiz-option.selected {
+      background: #334155;
+      border-color: #f59e0b;
+    }
+
+    .quiz-option.correct {
+      background: #10b981;
+      border-color: #10b981;
+    }
+
+    .quiz-option.incorrect {
+      background: #ef4444;
+      border-color: #ef4444;
+    }
+
+    .btn-primary {
+      background: #f59e0b;
+      color: #1e293b;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #f97316;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: #cbd5e1;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 300px;
+        border-right: none;
+        border-bottom: 1px solid #334155;
+      }
+
+      .navbar-buttons {
+        display: none;
+      }
+
+      .search-box {
+        width: 150px;
+      }
+    }
+
+    /* Global scrollbar styling (unchanged) */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    /* 🔽 TCL Tools Dropdown Styles */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 220px;
+  display: none;
+  flex-direction: column;
+  padding: 6px 0;
+  z-index: 999;
+}
+
+.dropdown-menu.active {
+  display: flex;
+}
+
+.dropdown-item {
+  text-decoration: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin: 2px 8px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.dropdown-item:hover {
+  background: #334155;
+  opacity: 0.95;
+}
+
+.dropdown i {
+  width: 18px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-left">
+    <div class="logo">
+      <i class="fas fa-terminal"></i>
+      TCLForge
+    </div>
+
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search concepts..." id="search">
+    </div>
+
+    <!-- 🔽 TCL Tools Dropdown -->
+    <div class="dropdown">
+      <button class="btn-tools" id="tclDropdown">
+        <i class="fas fa-layer-group"></i>
+        TCL Tools
+        <i class="fas fa-chevron-down" style="font-size: 12px; margin-left: 6px;"></i>
+      </button>
+
+      <div id="tclDropdownMenu" class="dropdown-menu">
+        <a href="live_tcl_runner.html" class="dropdown-item btn-live">
+          <i class="fas fa-terminal"></i> Live Tcl Runner
+        </a>
+        <a href="tcl_challenges.html" class="dropdown-item btn-challenges">
+          <i class="fas fa-rocket"></i> TCL Challenges
+        </a>
+        <a href="https://www.tcl-lang.org/man/tcl8.6.13/TclCmd/contents.htm" target="_blank" class="dropdown-item btn-manual">
+          <i class="fas fa-book"></i> TCL Manual
+        </a>
+        <a href="notes.html" class="dropdown-item btn-notes">
+          <i class="fas fa-sticky-note"></i> TCL Notes
+        </a>
+        <a href="TCL_Interview_Pre.html" class="dropdown-item btn-interview">
+          <i class="fas fa-user-tie"></i> Interview Prep
+        </a>
+        <button class="dropdown-item btn-cheat" id="download-cheatsheet">
+          <i class="fas fa-file-download"></i> Cheatsheet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="navbar-buttons">
+    <a href="https://www.linkedin.com/in/kunalsaraswat/" target="_blank" class="btn-linkedin">
+      <i class="fab fa-linkedin"></i>
+      LinkedIn
+    </a>
+
+    <!-- Profile Dropdown -->
+    <div class="profile-container">
+      <button class="btn-profile" id="profileBtn">
+        <i class="fas fa-user"></i>
+        Profile
+      </button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="dropdown-header">
+          Logged in as
+          <div class="dropdown-username" id="usernameDisplay">User</div>
+        </div>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" id="resetPasswordBtn">
+            <i class="fas fa-key"></i>
+            Change Password
+          </button>
+          <button class="dropdown-item logout" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-title">
+        <i class="fas fa-list-ul"></i>
+        TCL Concepts
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>Learning Progress</span>
+          <span id="progress">0/71</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-bar"></div>
+        </div>
+      </div>
+
+       <!-- Reset Progress Button -->
+<div style="margin-bottom: 16px;">
+  <button id="reset-progress" style="
+    width: 100%;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  ">
+    <i class="fas fa-rotate-left"></i> Reset Progress
+  </button>
+</div>
+
+      <!-- Filter -->
+      <div class="filter-section">
+        <label class="filter-label">Filter by Category</label>
+        <select class="filter-select" id="category-filter">
+          <option value="all">All Categories</option>
+          <option value="Basics">Basics</option>
+          <option value="Data Types & Variables">Data Types & Variables</option>
+          <option value="Control Flow">Control Flow</option>
+          <option value="Procedures & Namespaces">Procedures & Namespaces</option>
+          <option value="Advanced Topics">Advanced Topics</option>
+          <option value="Error Handling">Error Handling</option>
+          <option value="File System">File System</option>
+          <option value="I/O Operations">I/O Operations</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Libraries & Extensions">Libraries & Extensions</option>
+          <option value="Packages & Libraries">Packages & Libraries</option>
+          <option value="String Manipulation">String Manipulation</option>
+          <option value="Expressions">Expressions</option>
+        </select>
+      </div>
+
+      <!-- Concepts List -->
+      <div class="concepts-list" id="concept-list">
+        <!-- Concepts will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-title" id="concept-title">Select a Concept</div>
+        <div class="header-info">
+          <span class="header-badge" id="concept-category">Category</span>
+          <div class="header-level" id="concept-difficulty">
+            <i class="fas fa-star"></i>
+            Difficulty Level
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('description')">
+          <i class="fas fa-info-circle"></i>
+          Description
+        </button>
+        <button class="tab" onclick="showTab('example')">
+          <i class="fas fa-code"></i>
+          Example
+        </button>
+        <button class="tab" onclick="showTab('playground')">
+          <i class="fas fa-terminal"></i>
+          Playground
+        </button>
+        <button class="tab" onclick="showTab('quiz')">
+          <i class="fas fa-question-circle"></i>
+          Quiz
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Description Tab -->
+        <div id="description" class="tab-content active">
+          <p style="margin-bottom: 24px; color: #cbd5e1; line-height: 1.6;" id="concept-description">
+            Select a concept from the sidebar to start learning. Each concept includes a detailed description, code examples, an interactive playground to practice, and a quiz to test your knowledge.
+          </p>
+
+          <div class="takeaway-section">
+            <div class="takeaway-title">
+              <i class="fas fa-lightbulb"></i>
+              Key Takeaways
+            </div>
+            <div id="key-takeaways">
+              <div class="takeaway-item">
+                <i class="takeaway-icon fas fa-check-circle"></i>
+                Select concepts to learn TCL programming
+              </div>
+              <div class="takeaway-item">
+                <i class="takeaway-icon fas fa-check-circle"></i>
+                Practice with interactive code examples
+              </div>
+              <div class="takeaway-item">
+                <i class="takeaway-icon fas fa-check-circle"></i>
+                Test knowledge with quizzes
+              </div>
+              <div class="takeaway-item">
+                <i class="takeaway-icon fas fa-check-circle"></i>
+                Track your learning progress
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Example Tab -->
+        <div id="example" class="tab-content" style="color: #cbd5e1;">
+          <div class="code-editor">
+            <div class="code-header">
+              <span>Example Code</span>
+              <div class="code-actions">
+                <button class="btn-secondary" id="copy-example">
+                  <i class="fas fa-copy"></i>
+                  Copy
+                </button>
+                <button class="btn-primary" id="run-example">
+                  <i class="fas fa-play"></i>
+                  Run
+                </button>
+              </div>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-tcl" id="example-code"># Select a concept to see example code</code></pre>
+            </div>
+          </div>
+          <div class="code-output" style="margin-top: 16px;" id="example-output">
+            Output will appear here
+          </div>
+        </div>
+
+        <!-- Playground Tab -->
+        <div id="playground" class="tab-content" style="color: #cbd5e1;">
+          <div class="code-editor">
+            <div class="code-header">
+              <span>TCL Playground</span>
+              <div class="code-actions">
+                <button class="btn-secondary" id="template-loop">
+                  <i class="fas fa-redo"></i>
+                  Loop Template
+                </button>
+                <button class="btn-secondary" id="template-proc">
+                  <i class="fas fa-cube"></i>
+                  Procedure Template
+                </button>
+                <select class="filter-select" id="load-snippet" style="width: 150px;">
+                  <option value="">Load Snippet</option>
+                </select>
+              </div>
+            </div>
+            <div class="code-body">
+              <textarea class="code-input" id="code-input" placeholder="Write your TCL code here..."></textarea>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <button class="btn-secondary" id="reset-code">
+              <i class="fas fa-redo"></i>
+              Reset
+            </button>
+            <button class="btn-secondary" id="save-snippet">
+              <i class="fas fa-save"></i>
+              Save
+            </button>
+            <button class="btn-primary" id="run-code">
+              <i class="fas fa-play"></i>
+              Run Code
+            </button>
+          </div>
+          <div class="code-output" style="margin-top: 16px;" id="code-output">
+            Output will appear here
+          </div>
+        </div>
+
+        <!-- Quiz Tab -->
+        <div id="quiz" class="tab-content" style="color: #cbd5e1;">
+          <div id="quiz-content">
+            <p>Select a concept to see quiz questions.</p>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="btn-primary" id="submit-quiz">
+              <i class="fas fa-paper-plane"></i>
+              Submit Answer
+            </button>
+          </div>
+          <div id="quiz-result" style="margin-top: 16px; padding: 12px; border-radius: 6px; background: #1e293b;"></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <button class="btn-nav" id="prev-link" style="display: none;">
+          <i class="fas fa-arrow-left"></i>
+          Previous
+        </button>
+        <button class="btn-nav" id="next-link" style="display: none;">
+          Next
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div class="modal" id="resetModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Change Password</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" class="form-input" id="oldPassword" placeholder="Enter current password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+      </div>
+
+      <div class="form-message" id="resetMessage"></div>
+      <button class="btn-submit" onclick="resetPassword()">Update Password</button>
+    </div>
+  </div>
+
+  <script>
+    // Enhanced Tcl Concepts Data (all 71 concepts)
+
+    const tclConcepts = [
+  // =====================================================
+  // 🧱 BASICS
+  // =====================================================
+  {
+    category: "Basics",
+    difficulty: 1,
+    title: "Your First TCL Command",
+    description: "The 'puts' command outputs text to the console. It is the most basic Tcl command used for displaying messages. Every Tcl script typically starts with puts for debugging and output. The command takes one or more arguments and prints them to stdout.",
+    example: `puts "Hello, World!"`,
+    output: "Hello, World!",
+    quiz: {
+      question: "Which command displays text on the console in Tcl?",
+      options: ["echo", "puts", "print", "display"],
+      answer: "puts",
+      question2: "What is the default output channel for puts?",
+      options2: ["stderr", "stdout", "file", "socket"],
+      answer2: "stdout",
+      question3: "How do you print without a newline in Tcl?",
+      options3: ["puts -nonewline", "print -n", "puts -n", "echo -nonewline"],
+      answer3: "puts -nonewline"
+    },
+    takeaways: [
+      "Use 'puts' to print text.",
+      "Commands in Tcl are space-separated.",
+      "Quotes group words into a single argument.",
+      "puts automatically adds newline unless -nonewline flag is used"
+    ]
+  },
+  {
+    category: "Basics",
+    difficulty: 1,
+    title: "Comments in Tcl",
+    description: "Comments start with a '#' and continue until the end of the line. They are essential for documenting code and explaining complex logic. Unlike some languages, Tcl doesn't support multi-line comment blocks - each line must start with #. Comments can appear after commands on the same line.",
+    example: `# This is a comment\nputs "Hello Tcl"  # This prints greeting`,
+    output: "Hello Tcl",
+    quiz: {
+      question: "Which symbol is used to start a comment in Tcl?",
+      options: ["//", "#", "--", "/*"],
+      answer: "#",
+      question2: "Can comments appear at the end of a command line?",
+      options2: ["Yes, after #", "No, only at line start", "Only with //", "Only in procedures"],
+      answer2: "Yes, after #",
+      question3: "What happens if you put # inside quotes?",
+      options3: ["It becomes part of string", "It still comments", "Syntax error", "It creates a variable"],
+      answer3: "It becomes part of string"
+    },
+    takeaways: [
+      "Comments improve code readability.",
+      "They are ignored during execution.",
+      "Use them generously in scripts.",
+      "# only works outside quoted strings"
+    ]
+  },
+  {
+    category: "Basics",
+    difficulty: 2,
+    title: "Command Substitution",
+    description: "Square brackets `[]` execute commands and substitute their results into the enclosing command. This is fundamental for dynamic scripting. The command inside brackets runs first, and its return value replaces the bracketed expression. Multiple nested substitutions are allowed.",
+    example: `puts "2 + 3 = [expr 2 + 3]"\nputs "Current time: [clock format [clock seconds]]"`,
+    output: "2 + 3 = 5\nCurrent time: [current timestamp]",
+    quiz: {
+      question: "What do square brackets [] do in Tcl?",
+      options: ["Comment", "Group text", "Execute commands", "Define loops"],
+      answer: "Execute commands",
+      question2: "Can brackets be nested inside other brackets?",
+      options2: ["Yes", "No", "Only 2 levels deep", "Only in procedures"],
+      answer2: "Yes",
+      question3: "When does command substitution occur during parsing?",
+      options3: ["Before command execution", "After variable substitution", "At runtime only", "During compilation"],
+      answer3: "Before command execution"
+    },
+    takeaways: [
+      "Square brackets run commands inside them.",
+      "Useful for dynamic expressions.",
+      "Always return the command's output.",
+      "Can be nested for complex operations"
+    ]
+  },
+
+  // =====================================================
+  // 📦 DATA TYPES & VARIABLES
+  // =====================================================
+  {
+    category: "Data Types & Variables",
+    difficulty: 1,
+    title: "Declaring Variables",
+    description: "Variables are created using the 'set' command. Tcl is dynamically typed, so no type declaration is needed. Variables can store strings, numbers, lists, or any other data. The same variable can hold different types during execution. Use unset to remove variables.",
+    example: `set name "Kunal"\nset age 25\nputs "Hello, $name. You are $age years old."\nunset age`,
+    output: "Hello, Kunal. You are 25 years old.",
+    quiz: {
+      question: "Which command assigns a value to a variable?",
+      options: ["let", "assign", "set", "define"],
+      answer: "set",
+      question2: "How do you remove a variable from memory?",
+      options2: ["delete", "remove", "unset", "clear"],
+      answer2: "unset",
+      question3: "What does $variable do?",
+      options3: ["Creates variable", "Gets variable value", "Deletes variable", "Checks existence"],
+      answer3: "Gets variable value"
+    },
+    takeaways: [
+      "'set' creates and assigns variables.",
+      "Use '$var' to access variable values.",
+      "Variables don't need a type.",
+      "unset frees variable memory"
+    ]
+  },
+  {
+    category: "Data Types & Variables",
+    difficulty: 2,
+    title: "Using expr for Calculations",
+    description: "The 'expr' command is used to evaluate mathematical and logical expressions. It supports integers, floating-point numbers, and boolean operations. Always use expr for math - direct string math won't work. expr handles operator precedence and parentheses grouping automatically.",
+    example: `set a 10\nset b 5\nputs "Sum: [expr $a + $b]"\nputs "Average: [expr ($a + $b) / 2.0]"`,
+    output: "Sum: 15\nAverage: 7.5",
+    quiz: {
+      question: "Which command evaluates mathematical expressions?",
+      options: ["calc", "expr", "math", "eval"],
+      answer: "expr",
+      question2: "What's the result of: expr {5 / 2}",
+      options2: ["2", "2.5", "3", "2.0"],
+      answer2: "2",
+      question3: "Why use braces {} with expr?",
+      options3: ["Better performance", "Required syntax", "Optional decoration", "Only for strings"],
+      answer3: "Better performance"
+    },
+    takeaways: [
+      "Always use 'expr' for arithmetic.",
+      "Supports operators like +, -, *, /, %.",
+      "Variables must be prefixed with '$'.",
+      "Braces {} improve security and speed"
+    ]
+  },
+  {
+    category: "Data Types & Variables",
+    difficulty: 3,
+    title: "Arrays and Dictionaries",
+    description: "Arrays are key-value pairs where keys can be arbitrary strings. Tcl also provides 'dict' for structured data storage with better performance for large datasets. Arrays use hash tables internally. dict commands provide more operations than traditional arrays.",
+    example: `array set marks {Math 95 Science 88 English 92}\nputs "Math score: $marks(Math)"\n\nset student [dict create name "Alice" age 22 grade "A"]\nputs [dict get $student name]`,
+    output: "Math score: 95\nAlice",
+    quiz: {
+      question: "Which command sets key-value pairs in an array?",
+      options: ["array new", "array set", "array define", "set array"],
+      answer: "array set",
+      question2: "How do you get all array indices?",
+      options2: ["array names", "array indices", "array keys", "array list"],
+      answer2: "array names",
+      question3: "Which is newer and recommended for key-value data?",
+      options3: ["array", "dict", "list", "hash"],
+      answer3: "dict"
+    },
+    takeaways: [
+      "Use 'array set' to define arrays.",
+      "Access values as $array(key).",
+      "'dict' offers similar key-value behavior.",
+      "dict is generally preferred over array"
+    ]
+  },
+
+  // =====================================================
+  // 🔁 CONTROL FLOW
+  // =====================================================
+  {
+    category: "Control Flow",
+    difficulty: 1,
+    title: "If-Else Condition",
+    description: "Tcl supports conditional statements using 'if', 'elseif', and 'else'. Conditions are expressions that evaluate to boolean. The body of each branch must be in braces. Multiple elseif branches can test various conditions sequentially.",
+    example: `set x 10\nif {$x > 5} {\n  puts "Greater than 5"\n} elseif {$x == 5} {\n  puts "Equal to 5"\n} else {\n  puts "Less than 5"\n}`,
+    output: "Greater than 5",
+    quiz: {
+      question: "What keyword is used for condition checking?",
+      options: ["check", "if", "when", "case"],
+      answer: "if",
+      question2: "How many elseif blocks can you have?",
+      options2: ["Only 1", "Maximum 3", "Unlimited", "Maximum 10"],
+      answer2: "Unlimited",
+      question3: "What must enclose the condition expression?",
+      options3: ["Parentheses ()", "Braces {}", "Brackets []", "Quotes \"\""],
+      answer3: "Braces {}"
+    },
+    takeaways: [
+      "Conditions are enclosed in {}.",
+      "'elseif' adds multiple checks.",
+      "Curly braces prevent premature evaluation.",
+      "Always include else for completeness"
+    ]
+  },
+  {
+    category: "Control Flow",
+    difficulty: 2,
+    title: "While Loop",
+    description: "Loops continue until a condition becomes false. The while loop checks condition before each iteration. Use break to exit early, continue to skip to next iteration. Infinite loops can be created with condition {1}.",
+    example: `set i 0\nset total 0\nwhile {$i < 5} {\n  if {$i == 2} {\n    incr i\n    continue\n  }\n  set total [expr $total + $i]\n  incr i\n}\nputs "Total: $total"`,
+    output: "Total: 7",
+    quiz: {
+      question: "Which command increments a variable?",
+      options: ["inc", "incr", "add", "plus"],
+      answer: "incr",
+      question2: "How do you exit a loop prematurely?",
+      options2: ["exit", "break", "stop", "return"],
+      answer2: "break",
+      question3: "What does 'continue' do?",
+      options3: ["Ends loop", "Skips to next iteration", "Restarts loop", "Exits script"],
+      answer3: "Skips to next iteration"
+    },
+    takeaways: [
+      "Use 'while' for conditional loops.",
+      "'incr var' increases the value by 1.",
+      "Break loops using 'break'.",
+      "'continue' skips current iteration"
+    ]
+  },
+  {
+    category: "Control Flow",
+    difficulty: 3,
+    title: "For Loop",
+    description: "The 'for' loop is used for counting iterations, similar to C syntax. It has four parts: initialization, condition, increment, and body. All parts are mandatory but can be empty. Useful for iterating over ranges or fixed counts.",
+    example: `# Countdown example\nfor {set i 5} {$i >= 0} {incr i -1} {\n  if {$i == 0} {\n    puts "Blast off!"\n  } else {\n    puts "T-$i seconds"\n  }\n}`,
+    output: "T-5 seconds\nT-4 seconds\nT-3 seconds\nT-2 seconds\nT-1 seconds\nBlast off!",
+    quiz: {
+      question: "Which keyword defines the initialization part of a for loop?",
+      options: ["init", "setup", "set", "for"],
+      answer: "set",
+      question2: "Can the increment part decrement a variable?",
+      options2: ["Yes, with negative value", "No, only increment", "Only with incr -1", "Only in while loops"],
+      answer2: "Yes, with negative value",
+      question3: "What happens if condition is always true?",
+      options3: ["Infinite loop", "Syntax error", "Runs once", "Doesn't run"],
+      answer3: "Infinite loop"
+    },
+    takeaways: [
+      "Initialization, condition, increment are in {}.",
+      "Can loop over ranges easily.",
+      "'continue' skips to next iteration.",
+      "All four parts are required syntax"
+    ]
+  },
+
+  // =====================================================
+  // ⚙️ PROCEDURES & NAMESPACES
+  // =====================================================
+  {
+    category: "Procedures & Namespaces",
+    difficulty: 2,
+    title: "Creating a Procedure",
+    description: "The 'proc' command defines reusable blocks of code (functions). Procedures can have arguments with default values. They can return values using 'return' command. Procedures help modularize code and avoid repetition.",
+    example: `proc calculate {a b {operation "+"}} {\n  switch $operation {\n    "+" {return [expr $a + $b]}\n    "-" {return [expr $a - $b]}\n    "*" {return [expr $a * $b]}\n    "/" {return [expr $a / $b]}\n    default {error "Unknown operation"}\n  }\n}\nputs [calculate 10 5 "+"]\nputs [calculate 10 5 "*"]`,
+    output: "15\n50",
+    quiz: {
+      question: "Which command creates a procedure?",
+      options: ["def", "function", "proc", "method"],
+      answer: "proc",
+      question2: "How do you return a value from procedure?",
+      options2: ["output", "send", "return", "exit"],
+      answer2: "return",
+      question3: "Can procedures have optional arguments?",
+      options3: ["Yes, with default values", "No", "Only in Tcl 8.6+", "Only with args keyword"],
+      answer3: "Yes, with default values"
+    },
+    takeaways: [
+      "Procedures use the 'proc' keyword.",
+      "Arguments are listed in braces.",
+      "Return values are optional.",
+      "Default arguments use {} around value"
+    ]
+  },
+  {
+    category: "Procedures & Namespaces",
+    difficulty: 3,
+    title: "Namespaces",
+    description: "Namespaces organize variables and procedures, avoiding naming conflicts. They create separate scopes for code. Use :: separator to access across namespaces. Namespaces can be nested for complex projects.",
+    example: `namespace eval MathOps {\n  variable PI 3.14159\n  \n  proc area {radius} {\n    variable PI\n    return [expr $PI * $radius * $radius]\n  }\n  \n  proc circumference {radius} {\n    variable PI\n    return [expr 2 * $PI * $radius]\n  }\n}\n\nputs "Area: [MathOps::area 5]"\nputs "Circumference: [MathOps::circumference 5]"`,
+    output: "Area: 78.53975\nCircumference: 31.4159",
+    quiz: {
+      question: "What symbol separates namespace and command?",
+      options: ["::", ".", ":", "->"],
+      answer: "::",
+      question2: "How do you create a namespace variable?",
+      options2: ["variable command", "set command", "namespace var", "global command"],
+      answer2: "variable command",
+      question3: "Can namespaces be nested?",
+      options3: ["Yes", "No", "Only 2 levels", "Only with special syntax"],
+      answer3: "Yes"
+    },
+    takeaways: [
+      "Use 'namespace eval' to define scopes.",
+      "‘::’ separates namespace components.",
+      "Prevents variable name collisions.",
+      "variable command creates namespace vars"
+    ]
+  },
+
+  // =====================================================
+  // ⚠️ ERROR HANDLING
+  // =====================================================
+  {
+    category: "Error Handling",
+    difficulty: 2,
+    title: "Catch Command",
+    description: "The 'catch' command traps errors and prevents program crashes. It returns 0 on success, 1 on error. The error message can be captured in a variable. Multiple commands can be wrapped in catch for safe execution.",
+    example: `set result {}\nset status [catch {\n  set x [expr 10 / 0]\n  puts "Result: $x"\n} result]\n\nif {$status} {\n  puts "Error occurred: $result"\n  puts "Error code: $::errorCode"\n  puts "Error info: $::errorInfo"\n}`,
+    output: "Error occurred: divide by zero\nError code: ARITH DIVZERO {divide by zero}\nError info: [error details]",
+    quiz: {
+      question: "Which command handles exceptions in Tcl?",
+      options: ["try", "handle", "catch", "except"],
+      answer: "catch",
+      question2: "What does catch return on success?",
+      options2: ["0", "1", "-1", "true"],
+      answer2: "0",
+      question3: "Where are error details stored?",
+      options3: ["$error", "$::errorInfo", "$result", "$status"],
+      answer3: "$::errorInfo"
+    },
+    takeaways: [
+      "'catch' traps runtime errors.",
+      "It returns 0 for success, 1 for failure.",
+      "Useful for preventing crashes.",
+      "Error details in $::errorInfo"
+    ]
+  },
+  {
+    category: "Error Handling",
+    difficulty: 3,
+    title: "Error Command",
+    description: "The 'error' command explicitly generates an error from within code. It accepts error message and optional error code and error info. Useful for input validation and custom error conditions. Often used with catch for structured error handling.",
+    example: `proc divide {a b} {\n  if {$b == 0} {\n    error "Division by zero" "MATH" "Attempted to divide $a by zero"\n  }\n  return [expr $a / $b]\n}\n\nif {[catch {divide 10 0} msg]} {\n  puts "Caught error: $msg"\n  puts "Error code: $::errorCode"\n}`,
+    output: "Caught error: Division by zero\nError code: MATH",
+    quiz: {
+      question: "Which command raises a manual error?",
+      options: ["raise", "throw", "error", "fail"],
+      answer: "error",
+      question2: "How many arguments can error take?",
+      options2: ["1 only", "1 or 2", "1 to 3", "Unlimited"],
+      answer2: "1 to 3",
+      question3: "What's the second argument to error?",
+      options3: ["Error code", "Line number", "Variable name", "Stack trace"],
+      answer3: "Error code"
+    },
+    takeaways: [
+      "Use 'error' to generate custom errors.",
+      "Good for input validation.",
+      "Combines well with 'catch'.",
+      "Can include error code and info"
+    ]
+  },
+
+  // =====================================================
+  // 📁 FILE SYSTEM
+  // =====================================================
+  {
+    category: "File System",
+    difficulty: 2,
+    title: "File Read & Write",
+    description: "Files can be opened, read, and written using 'open', 'gets', 'puts', and 'close'. Different modes: r (read), w (write), a (append), r+ (read/write). Always close files to free resources. Use eof to check end of file.",
+    example: `# Write to file\nset f [open "demo.txt" w]\nputs $f "Line 1: Tcl File Demo"\nputs $f "Line 2: Learning file operations"\nclose $f\n\n# Read from file\nset f [open "demo.txt" r]\nwhile {[gets $f line] >= 0} {\n  puts "Read: $line"\n}\nclose $f`,
+    output: "Read: Line 1: Tcl File Demo\nRead: Line 2: Learning file operations",
+    quiz: {
+      question: "Which command opens a file in Tcl?",
+      options: ["file", "read", "open", "load"],
+      answer: "open",
+      question2: "What mode appends to existing file?",
+      options2: ["w", "a", "r+", "append"],
+      answer2: "a",
+      question3: "How do you read one line from file?",
+      options3: ["read", "gets", "readline", "getline"],
+      answer3: "gets"
+    },
+    takeaways: [
+      "Use 'open' with modes like 'r', 'w', 'a'.",
+      "'puts $file' writes data.",
+      "Always 'close' the file handle.",
+      "gets returns -1 at end of file"
+    ]
+  },
+  {
+    category: "File System",
+    difficulty: 3,
+    title: "File Existence Check",
+    description: "Use 'file exists' to verify if a file or directory is present. Other file commands: file isfile, file isdirectory, file size, file mtime. Essential for robust scripts that handle missing files gracefully.",
+    example: `set filename "demo.txt"\n\nif {[file exists $filename]} {\n  puts "File exists"\n  puts "Size: [file size $filename] bytes"\n  puts "Type: [file isfile $filename ? "File" : "Directory"]"\n  puts "Modified: [clock format [file mtime $filename]]"\n} else {\n  puts "File not found, creating..."\n  set f [open $filename w]\n  close $f\n}`,
+    output: "File exists\nSize: [size] bytes\nType: File\nModified: [timestamp]",
+    quiz: {
+      question: "Which command checks if a file exists?",
+      options: ["exists", "checkfile", "file exists", "isfile"],
+      answer: "file exists",
+      question2: "How do you check if path is directory?",
+      options2: ["file isdir", "file isdirectory", "file type dir", "file dir"],
+      answer2: "file isdirectory",
+      question3: "What does file mtime return?",
+      options3: ["Modification time", "Creation time", "Access time", "File size"],
+      answer3: "Modification time"
+    },
+    takeaways: [
+      "'file exists' returns 1 if true.",
+      "Works for both files and folders.",
+      "Helps prevent runtime errors.",
+      "Many other file info commands available"
+    ]
+  },
+
+  // =====================================================
+  // 🧵 STRING MANIPULATION
+  // =====================================================
+  {
+    category: "String Manipulation",
+    difficulty: 2,
+    title: "String Length and Index",
+    description: "The 'string' command provides operations like 'length', 'index', 'range', and 'replace'. Strings are basic data type in Tcl. All indices are zero-based. Negative indices count from end (-1 is last character).",
+    example: `set word "TclScript"\nputs "Length: [string length $word]"\nputs "First char: [string index $word 0]"\nputs "Last char: [string index $word end]"\nputs "Middle: [string range $word 3 6]"\nputs "Replaced: [string replace $word 3 6 "CODE"]`,
+    output: "Length: 9\nFirst char: T\nLast char: t\nMiddle: Scri\nReplaced: TclCODEt",
+    quiz: {
+      question: "Which command gets the length of a string?",
+      options: ["strlen", "size", "string length", "count"],
+      answer: "string length",
+      question2: "What does 'end' mean as string index?",
+      options2: ["Last character", "End of line", "Zero position", "Error"],
+      answer2: "Last character",
+      question3: "How do you extract substring?",
+      options3: ["string substr", "string range", "string extract", "string part"],
+      answer3: "string range"
+    },
+    takeaways: [
+      "'string' handles text operations.",
+      "'index' fetches a single character.",
+      "'range' extracts substrings.",
+      "Indices are zero-based"
+    ]
+  },
+  {
+    category: "String Manipulation",
+    difficulty: 3,
+    title: "String Match and Compare",
+    description: "Use 'string match' and 'string compare' for pattern matching and comparison. string match supports glob patterns: * (any chars), ? (single char), [abc] (character set). string compare returns -1, 0, or 1 for less, equal, greater.",
+    example: `set str1 "hello world"\nset str2 "HELLO WORLD"\n\nputs "Match 'hello*': [string match "hello*" $str1]"\nputs "Case-insensitive match: [string match -nocase "hello*" $str2]"\nputs "Compare: [string compare $str1 $str2]"\nputs "Case-insensitive compare: [string compare -nocase $str1 $str2]"\nputs "Equal?: [string equal $str1 $str2]"\nputs "Equal ignoring case?: [string equal -nocase $str1 $str2]"`,
+    output: "Match 'hello*': 1\nCase-insensitive match: 1\nCompare: 1\nCase-insensitive compare: 0\nEqual?: 0\nEqual ignoring case?: 1",
+    quiz: {
+      question: "Which command compares two strings?",
+      options: ["compare", "string compare", "match", "equal"],
+      answer: "string compare",
+      question2: "What does '?' match in string match?",
+      options2: ["Any character", "Zero or more chars", "Single character", "Digits only"],
+      answer2: "Single character",
+      question3: "What does string compare return for equal strings?",
+      options3: ["0", "1", "-1", "true"],
+      answer3: "0"
+    },
+    takeaways: [
+      "'string match' supports wildcards.",
+      "'string compare' returns 0 if equal.",
+      "Useful for input validation.",
+      "-nocase flag for case-insensitive"
+    ]
+  },
+
+  // =====================================================
+  // 🧮 EXPRESSIONS
+  // =====================================================
+  {
+    category: "Expressions",
+    difficulty: 2,
+    title: "Arithmetic Operators",
+    description: "Tcl expressions use standard operators like +, -, *, /, and %. Also supports ** for exponentiation. Operator precedence follows mathematical rules. Use parentheses to force evaluation order. expr handles both integer and floating point.",
+    example: `puts "Addition: [expr 5 + 3]"\nputs "Multiplication: [expr 5 * 3]"\nputs "Division: [expr 10 / 3]"\nputs "Floating division: [expr 10.0 / 3]"\nputs "Modulus: [expr 10 % 3]"\nputs "Exponent: [expr 2 ** 8]"\nputs "Complex: [expr (5 + 3) * 2 / 4.0]"`,
+    output: "Addition: 8\nMultiplication: 15\nDivision: 3\nFloating division: 3.3333333333333335\nModulus: 1\nExponent: 256\nComplex: 4.0",
+    quiz: {
+      question: "Which command evaluates expressions?",
+      options: ["eval", "math", "expr", "calc"],
+      answer: "expr",
+      question2: "What's the exponentiation operator?",
+      options2: ["^", "**", "exp", "pow"],
+      answer2: "**",
+      question3: "What does 10 / 3 produce in expr?",
+      options3: ["3", "3.333", "3.0", "Depends on arguments"],
+      answer3: "3"
+    },
+    takeaways: [
+      "Supports both integers and floats.",
+      "Parentheses alter precedence.",
+      "Combine with variables using $var.",
+      "** for exponentiation"
+    ]
+  },
+  {
+    category: "Expressions",
+    difficulty: 3,
+    title: "Boolean Logic",
+    description: "Tcl supports boolean operators like &&, ||, and ! inside expr. Also has bitwise operators: &, |, ^, <<, >>. Relational operators: <, >, <=, >=, ==, !=. Ternary operator ?: available. True is 1, false is 0.",
+    example: `set a 5\nset b 10\nset c 15\n\nputs "Logical AND: [expr {$a < $b && $b < $c}]"\nputs "Logical OR: [expr {$a > $b || $b < $c}]"\nputs "Not: [expr {!($a > $b)}]"\nputs "Bitwise AND: [expr {$a & 3}]"\nputs "Bitwise OR: [expr {$a | 2}]"\nputs "Ternary: [expr {$a > $b ? "greater" : "not greater"}]"\nputs "XOR: [expr {$a < $b ^ $b < $c}]"`,
+    output: "Logical AND: 1\nLogical OR: 1\nNot: 1\nBitwise AND: 1\nBitwise OR: 7\nTernary: not greater\nXOR: 0",
+    quiz: {
+      question: "Which operator means logical AND?",
+      options: ["&", "and", "&&", "+"],
+      answer: "&&",
+      question2: "What's the ternary operator syntax?",
+      options2: ["if then else", "? :", "cond ?", "?:?"],
+      answer2: "? :",
+      question3: "What's bitwise XOR operator?",
+      options3: ["xor", "^", "~", "!"],
+      answer3: "^"
+    },
+    takeaways: [
+      "Logical AND is '&&'.",
+      "Logical OR is '||'.",
+      "Negation is '!'.",
+      "Ternary operator ?: available"
+    ]
+  }
+];
+
+
+    // Tcl Interpreter
+    const tclInterpreter = {
+      run: async (code) => {
+        try {
+          if (!code.trim()) throw new Error("Code is empty");
+
+          // Basic Tcl command simulation
+          const lines = code.split('\n');
+          let output = [];
+          let variables = {};
+          let lists = {};
+
+          for (let line of lines) {
+            line = line.trim();
+            if (!line || line.startsWith('#')) continue;
+
+            // puts command
+            if (line.startsWith('puts ')) {
+              let content = line.slice(5).trim();
+              if (content.startsWith('-nonewline ')) {
+                content = content.slice(11).replace(/"/g, '');
+                output.push(content);
+              } else {
+                content = content.replace(/"/g, '').replace(/\$(\w+)/g, (_, v) => variables[v] || 'undefined');
+                output.push(content);
+              }
+            }
+            // set command
+            else if (line.startsWith('set ')) {
+              const match = line.match(/set (\w+) (.+)/);
+              if (match) {
+                const [, varName, value] = match;
+                variables[varName] = value.replace(/"/g, '');
+                output.push(`${varName} = ${variables[varName]}`);
+              }
+            }
+            // expr command
+            else if (line.includes('expr ')) {
+              const exprMatch = line.match(/expr (.+)/);
+              if (exprMatch) {
+                let expr = exprMatch[1].replace(/\$(\w+)/g, (_, v) => variables[v] || '0');
+                try {
+                  const result = eval(expr.replace(/{/g, '(').replace(/}/g, ')'));
+                  output.push(result);
+                } catch (e) {
+                  throw new Error(`Expression error: ${e.message}`);
+                }
+              }
+            }
+            // incr command
+            else if (line.startsWith('incr ')) {
+              const match = line.match(/incr (\w+)(?:\s+(.+))?/);
+              if (match) {
+                const [, varName, inc = '1'] = match;
+                if (variables[varName]) {
+                  variables[varName] = parseInt(variables[varName]) + parseInt(inc);
+                  output.push(`${varName} = ${variables[varName]}`);
+                } else {
+                  throw new Error(`Variable ${varName} not defined`);
+                }
+              }
+            }
+            // lappend command
+            else if (line.startsWith('lappend ')) {
+              const match = line.match(/lappend (\w+) (.+)/);
+              if (match) {
+                const [, listName, value] = match;
+                lists[listName] = lists[listName] ? `${lists[listName]} ${value}` : value;
+                output.push(lists[listName]);
+              }
+            }
+            // Other commands
+            else {
+              output.push(`(Simulated) Executed: ${line}`);
+            }
+          }
+          return output.join('\n');
+        } catch (e) {
+          throw new Error(e.message);
+        }
+      }
+    };
+
+    // State Management
+    let viewedConcepts = new Set(JSON.parse(localStorage.getItem('viewedConcepts') || '[]'));
+    let savedSnippets = JSON.parse(localStorage.getItem('savedSnippets') || '{}');
+    let quizScores = JSON.parse(localStorage.getItem('quizScores') || '{}');
+    let currentConceptIndex = -1;
+
+    // Initialize on page load
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const email = localStorage.getItem("email");
+
+      if (!token) {
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.username) {
+          document.getElementById("usernameDisplay").textContent = data.username;
+        } else {
+          const user = email ? email.split("@")[0] : "User";
+          document.getElementById("usernameDisplay").textContent = user;
+        }
+      } catch (err) {
+        const user = email ? email.split("@")[0] : "User";
+        document.getElementById("usernameDisplay").textContent = user;
+      }
+
+      // Initialize the application
+      initializeApp();
+    });
+
+    function initializeApp() {
+      // Initialize Fuse.js for search
+      const fuse = new Fuse(tclConcepts, {
+        keys: ['title', 'description', 'category', 'takeaways'],
+        threshold: 0.4,
+        includeScore: true
+      });
+
+      // Populate sidebar
+      populateConcepts();
+
+      // Setup event listeners
+      setupEventListeners(fuse);
+
+      // Update progress
+      updateProgress();
+
+      // Load concept from URL if specified
+      const urlParams = new URLSearchParams(window.location.search);
+      const conceptIndex = parseInt(urlParams.get('concept'));
+      if (conceptIndex >= 0 && conceptIndex < tclConcepts.length) {
+        showConcept(conceptIndex);
+      } else if (tclConcepts.length > 0) {
+        // Show first concept by default
+        showConcept(0);
+      }
+    }
+
+    function populateConcepts(filter = 'all', query = '') {
+      const conceptList = document.getElementById('concept-list');
+      conceptList.innerHTML = '';
+
+      let filteredConcepts = filter === 'all' ? tclConcepts :
+        tclConcepts.filter(c => c.category === filter);
+
+      if (query) {
+        const fuse = new Fuse(tclConcepts, {
+          keys: ['title', 'description', 'category'],
+          threshold: 0.4
+        });
+        filteredConcepts = fuse.search(query).map(result => result.item);
+      }
+
+      filteredConcepts.forEach((concept, index) => {
+        const originalIndex = tclConcepts.findIndex(c => c.title === concept.title);
+        const isViewed = viewedConcepts.has(originalIndex);
+        const hasQuizScore = quizScores[concept.title];
+
+        const button = document.createElement('button');
+        button.className = `concept-item ${isViewed ? 'active' : ''}`;
+        button.innerHTML = `
+          <span>${concept.title}</span>
+          <span class="concept-stars">
+            ${hasQuizScore ? '<i class="fas fa-check text-green-400 mr-1"></i>' : ''}
+            ${'★'.repeat(concept.difficulty)}
+          </span>
+        `;
+
+        button.addEventListener('click', () => showConcept(originalIndex));
+        conceptList.appendChild(button);
+      });
+    }
+
+    // === Reset Progress Button ===
+document.getElementById('reset-progress').addEventListener('click', () => {
+  if (confirm("Are you sure you want to reset your progress? This will clear all viewed concepts and quiz scores.")) {
+    localStorage.removeItem('viewedConcepts');
+    localStorage.removeItem('quizScores');
+    viewedConcepts.clear();
+    quizScores = {};
+    updateProgress();
+    populateConcepts();
+    alert("Progress has been reset to 0!");
+  }
+});
+
+    function setupEventListeners(fuse) {
+      // Category filter
+      document.getElementById('category-filter').addEventListener('change', (e) => {
+        populateConcepts(e.target.value);
+      });
+
+      // Search
+      let searchTimeout;
+      document.getElementById('search').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          populateConcepts(document.getElementById('category-filter').value, e.target.value);
+        }, 300);
+      });
+
+      // Copy example code
+      document.getElementById('copy-example').addEventListener('click', () => {
+        const code = document.getElementById('example-code').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          const btn = document.getElementById('copy-example');
+          btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+          setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+          }, 2000);
+        });
+      });
+
+      // Run example code
+      document.getElementById('run-example').addEventListener('click', async () => {
+        const code = document.getElementById('example-code').textContent;
+        const output = document.getElementById('example-output');
+
+        try {
+          const result = await tclInterpreter.run(code);
+          output.textContent = result;
+        } catch (e) {
+          output.textContent = `Error: ${e.message}`;
+        }
+      });
+
+      // Run playground code
+      document.getElementById('run-code').addEventListener('click', async () => {
+        const code = document.getElementById('code-input').value;
+        const output = document.getElementById('code-output');
+
+        try {
+          const result = await tclInterpreter.run(code);
+          output.textContent = result;
+        } catch (e) {
+          output.textContent = `Error: ${e.message}`;
+        }
+      });
+
+      // Reset code
+      document.getElementById('reset-code').addEventListener('click', () => {
+        if (currentConceptIndex >= 0) {
+          document.getElementById('code-input').value = tclConcepts[currentConceptIndex].example;
+          document.getElementById('code-output').textContent = '';
+        }
+      });
+
+      // Save snippet
+      document.getElementById('save-snippet').addEventListener('click', () => {
+        if (currentConceptIndex >= 0) {
+          const code = document.getElementById('code-input').value;
+          const title = tclConcepts[currentConceptIndex].title;
+          savedSnippets[title] = code;
+          localStorage.setItem('savedSnippets', JSON.stringify(savedSnippets));
+          updateSnippetDropdown();
+
+          const btn = document.getElementById('save-snippet');
+          btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+          setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-save"></i> Save';
+          }, 2000);
+        }
+      });
+
+      // Template buttons
+      document.getElementById('template-loop').addEventListener('click', () => {
+        document.getElementById('code-input').value = `for {set i 0} {\$i < 5} {incr i} {\n    puts "Iteration \$i"\n}`;
+      });
+
+      document.getElementById('template-proc').addEventListener('click', () => {
+        document.getElementById('code-input').value = `proc myProc {arg1 arg2} {\n    puts "Received: \$arg1, \$arg2"\n    return [expr {\$arg1 + \$arg2}]\n}\nputs [myProc 5 10]`;
+      });
+
+      // Submit quiz
+      document.getElementById('submit-quiz').addEventListener('click', () => {
+        if (currentConceptIndex >= 0) {
+          const selected = document.querySelector('input[name="quiz-answer"]:checked');
+          const resultDiv = document.getElementById('quiz-result');
+
+          if (!selected) {
+            resultDiv.innerHTML = '<span class="text-red-400">Please select an answer</span>';
+            return;
+          }
+
+          const answer = selected.value;
+          const concept = tclConcepts[currentConceptIndex];
+          const correct = concept.quiz.answer;
+          const isCorrect = answer === correct;
+
+          quizScores[concept.title] = isCorrect ? 'Correct!' : `Incorrect (Correct: ${correct})`;
+          localStorage.setItem('quizScores', JSON.stringify(quizScores));
+
+          resultDiv.innerHTML = isCorrect ?
+            '<span class="text-green-400">✓ Correct! Well done!</span>' :
+            `<span class="text-red-400">✗ Incorrect. The correct answer is "${correct}".</span>`;
+
+          updateProgress();
+          populateConcepts(document.getElementById('category-filter').value);
+        }
+      });
+
+      // Profile dropdown
+      document.getElementById("profileBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.getElementById("profileDropdown").classList.toggle("active");
+      });
+
+      document.addEventListener("click", () => {
+        document.getElementById("profileDropdown").classList.remove("active");
+      });
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "/";
+      });
+
+      // Reset password modal
+      document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+        document.getElementById("profileDropdown").classList.remove("active");
+        document.getElementById("resetModal").classList.add("active");
+      });
+
+      document.getElementById("closeModal").addEventListener("click", () => {
+        document.getElementById("resetModal").classList.remove("active");
+      });
+
+      document.getElementById("resetModal").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("resetModal")) {
+          document.getElementById("resetModal").classList.remove("active");
+        }
+      });
+
+      // Navigation
+      document.getElementById('prev-link').addEventListener('click', () => {
+        if (currentConceptIndex > 0) {
+          showConcept(currentConceptIndex - 1);
+        }
+      });
+
+      document.getElementById('next-link').addEventListener('click', () => {
+        if (currentConceptIndex < tclConcepts.length - 1) {
+          showConcept(currentConceptIndex + 1);
+        }
+      });
+    }
+
+    function showConcept(index) {
+      currentConceptIndex = index;
+      const concept = tclConcepts[index];
+
+      // Update header
+      document.getElementById('concept-title').textContent = concept.title;
+      document.getElementById('concept-category').textContent = concept.category;
+
+      // Update difficulty
+      const difficultyElement = document.getElementById('concept-difficulty');
+      difficultyElement.innerHTML = '';
+      for (let i = 0; i < concept.difficulty; i++) {
+        difficultyElement.innerHTML += '<i class="fas fa-star"></i>';
+      }
+      difficultyElement.innerHTML += ` ${['Beginner', 'Intermediate', 'Advanced', 'Expert'][concept.difficulty - 1]}`;
+
+      // Update description
+      document.getElementById('concept-description').textContent = concept.description;
+
+      // Update key takeaways
+      const takeawaysContainer = document.getElementById('key-takeaways');
+      takeawaysContainer.innerHTML = '';
+      concept.takeaways.forEach(takeaway => {
+        const div = document.createElement('div');
+        div.className = 'takeaway-item';
+        div.innerHTML = `
+          <i class="takeaway-icon fas fa-check-circle"></i>
+          ${takeaway}
+        `;
+        takeawaysContainer.appendChild(div);
+      });
+
+      // Update example
+      document.getElementById('example-code').textContent = concept.example;
+      document.getElementById('example-output').textContent = concept.output || 'Output will appear here';
+
+      // Update playground
+      document.getElementById('code-input').value = concept.example;
+      document.getElementById('code-output').textContent = '';
+
+      // Update quiz
+      const quizContent = document.getElementById('quiz-content');
+      quizContent.innerHTML = `
+        <div class="mb-4">
+          <p class="text-lg font-medium mb-3">${concept.quiz.question}</p>
+          <div class="space-y-2">
+            ${concept.quiz.options.map((opt, i) => `
+              <label class="quiz-option">
+                <input type="radio" name="quiz-answer" value="${opt}" class="mr-2">
+                ${opt}
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // Update quiz result
+      const quizResult = document.getElementById('quiz-result');
+      if (quizScores[concept.title]) {
+        const isCorrect = quizScores[concept.title].includes('Correct');
+        quizResult.innerHTML = `
+          <span class="${isCorrect ? 'text-green-400' : 'text-red-400'}">
+            <i class="fas fa-${isCorrect ? 'check' : 'times'} mr-1"></i>
+            ${quizScores[concept.title]}
+          </span>
+        `;
+      } else {
+        quizResult.innerHTML = '';
+      }
+
+      // Update navigation
+      document.getElementById('prev-link').style.display = index > 0 ? 'flex' : 'none';
+      document.getElementById('next-link').style.display = index < tclConcepts.length - 1 ? 'flex' : 'none';
+
+      // Mark as viewed
+      viewedConcepts.add(index);
+      localStorage.setItem('viewedConcepts', JSON.stringify([...viewedConcepts]));
+
+      // Update progress
+      updateProgress();
+
+      // Highlight syntax
+      Prism.highlightAll();
+
+      // Update URL
+      const url = new URL(window.location);
+      url.searchParams.set('concept', index);
+      window.history.pushState({}, '', url);
+    }
+
+    function showTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      // Show selected tab
+      document.getElementById(tabName).classList.add('active');
+
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      // Find and activate the clicked tab
+      const tabs = document.querySelectorAll('.tab');
+      for (let tab of tabs) {
+        if (tab.getAttribute('onclick').includes(tabName)) {
+          tab.classList.add('active');
+          break;
+        }
+      }
+
+      // Re-highlight code if showing code tab
+      if (tabName === 'example' || tabName === 'playground') {
+        setTimeout(() => Prism.highlightAll(), 100);
+      }
+    }
+
+    function updateProgress() {
+      const total = tclConcepts.length;
+      const viewed = viewedConcepts.size;
+
+      document.getElementById('progress').textContent = `${viewed}/${total}`;
+      document.getElementById('progress-bar').style.width = `${(viewed / total) * 100}%`;
+    }
+
+    function updateSnippetDropdown() {
+      const dropdown = document.getElementById('load-snippet');
+      dropdown.innerHTML = '<option value="">Load Snippet</option>';
+      Object.keys(savedSnippets).forEach(title => {
+        const option = document.createElement('option');
+        option.value = title;
+        option.textContent = title;
+        dropdown.appendChild(option);
+      });
+
+      dropdown.addEventListener('change', (e) => {
+        const title = e.target.value;
+        if (title && savedSnippets[title]) {
+          document.getElementById('code-input').value = savedSnippets[title];
+        }
+      });
+    }
+
+    // Password reset function
+    async function resetPassword() {
+      const oldPass = document.getElementById("oldPassword").value.trim();
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPassword").value.trim();
+      const msgEl = document.getElementById("resetMessage");
+
+      if (!oldPass || !newPass || !confirmPass) {
+        showMessage(msgEl, "All fields are required.", "error");
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showMessage(msgEl, "New passwords do not match.", "error");
+        return;
+      }
+
+      if (newPass.length < 8) {
+        showMessage(msgEl, "Password must be at least 8 characters.", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/auth-reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("access"),
+          },
+          body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showMessage(msgEl, "Password updated successfully!", "success");
+          setTimeout(() => {
+            document.getElementById("resetModal").classList.remove("active");
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+            msgEl.classList.remove("active");
+          }, 1500);
+        } else {
+          showMessage(msgEl, data.error || "Failed to update password.", "error");
+        }
+      } catch (err) {
+        showMessage(msgEl, "Server error. Please try again.", "error");
+      }
+    }
+
+    function showMessage(el, text, type) {
+      el.textContent = text;
+      el.className = `form-message active ${type}`;
+    }
+
+    // Make functions available globally
+    window.showConcept = showConcept;
+    window.showTab = showTab;
+    window.resetPassword = resetPassword;
+  </script>
+<!-- ✅ TCL Cheatsheet PDF Generator -->
+<script defer>
+window.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('download-cheatsheet');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    const { jsPDF } = window.jspdf || {};
+    if (!jsPDF) {
+      alert('PDF library failed to load. Check your internet connection.');
+      return;
+    }
+
+    // Disable button while generating
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 40;
+    const usableWidth = pageWidth - margin * 2;
+    let y = margin;
+
+    // === Footer with credits & page numbers ===
+    const addFooter = () => {
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+        doc.text(
+          `TCL Forge Cheatsheet | Page ${i} of ${pageCount} | Created by Kunal Saraswat`,
+          pageWidth / 2,
+          pageHeight - 20,
+          { align: "center" }
+        );
+      }
+    };
+
+    // === Text helper ===
+    const addLine = (text, fontSize = 11, bold = false, color = [0, 0, 0], gap = 6) => {
+      doc.setFont("helvetica", bold ? "bold" : "normal");
+      doc.setFontSize(fontSize);
+      doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(text, usableWidth);
+      lines.forEach(line => {
+        if (y > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += fontSize + 3;
+      });
+      y += gap;
+    };
+
+    // === Shaded box helper (for code/output) ===
+    const addBox = (content, bgColor = [245, 245, 245]) => {
+      doc.setFont("courier", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(30, 30, 30);
+      const lines = doc.splitTextToSize(content, usableWidth - 12);
+      const lineHeight = 14;
+      const boxHeight = lines.length * lineHeight + 16;
+
+      if (y + boxHeight > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+
+      doc.setFillColor(...bgColor);
+      doc.rect(margin, y, usableWidth, boxHeight, "F");
+
+      let textY = y + 14;
+      lines.forEach(line => {
+        doc.text(line, margin + 6, textY);
+        textY += lineHeight;
+      });
+      y += boxHeight + 12;
+    };
+
+    // === 🎨 Centered Cover Page ===
+    const centerY = pageHeight / 2;
+
+    // Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(32);
+    doc.setTextColor(255, 140, 0);
+    doc.text("TCL Forge Cheatsheet", pageWidth / 2, centerY - 40, { align: "center" });
+
+    // Subtitle
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(15);
+    doc.setTextColor(90);
+    doc.text("Interactive TCL Concepts, Examples, and Quick Notes", pageWidth / 2, centerY - 10, { align: "center" });
+
+    // Timestamp
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth / 2, centerY + 30, { align: "center" });
+
+    // Credits
+    doc.setFontSize(11);
+    doc.setTextColor(120);
+    doc.text("Created by Kunal Saraswat | TCL Forge", pageWidth / 2, centerY + 50, { align: "center" });
+
+    // Next Page for Content
+    doc.addPage();
+    y = margin;
+
+    // === Loop through all TCL Concepts ===
+    (tclConcepts || []).forEach((c, idx) => {
+      addLine(`${idx + 1}. ${c.title}`, 14, true, [255, 140, 0], 6);
+      addLine(`[Category: ${c.category} | Difficulty: ${c.difficulty}]`, 10, false, [100, 100, 100], 12);
+
+      if (c.description) addLine(c.description, 11, false, [0, 0, 0], 12);
+
+      if (c.takeaways?.length) {
+        addLine("Key Takeaways:", 12, true, [34, 139, 34], 6);
+        c.takeaways.forEach(t => addLine(`• ${t}`, 11, false, [0, 80, 0], 3));
+        y += 10;
+      }
+
+      if (c.example) {
+        addLine("Example:", 12, true, [0, 0, 139], 6);
+        addBox(c.example, [230, 240, 255]);
+      }
+
+      if (c.output) {
+        addLine("Expected Output:", 12, true, [139, 0, 0], 6);
+        addBox(c.output, [255, 230, 230]);
+      }
+
+      if (c.quiz?.question) {
+        addLine("Quick Check:", 12, true, [255, 140, 0], 6);
+        addLine(`Q: ${c.quiz.question}`, 11, true, [0, 0, 0], 6);
+        if (c.quiz.options?.length) {
+          const optsText = c.quiz.options.map(opt => `• ${opt}`).join("\n");
+          addBox(optsText, [245, 245, 245]);
+        }
+        if (c.quiz.answer)
+          addLine(`Answer: ${c.quiz.answer}`, 11, true, [0, 128, 0], 12);
+      }
+
+      doc.setDrawColor(200);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 20;
+    });
+
+    // === Footer & Save ===
+    addFooter();
+    doc.save("TCL_Cheatsheet.pdf");
+
+    // Restore button text
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-file-download"></i> Cheatsheet';
+  });
+});
+</script>
+
+<script>
+const dropdownBtn = document.getElementById("tclDropdown");
+const dropdownMenu = document.getElementById("tclDropdownMenu");
+
+// Toggle dropdown on click
+dropdownBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // prevent click bubbling
+  dropdownMenu.classList.toggle("active");
+});
+
+// Close dropdown when clicking outside
+document.addEventListener("click", (e) => {
+  if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+    dropdownMenu.classList.remove("active");
+  }
+});
+</script>
+
+
+
+</body>
+</html>

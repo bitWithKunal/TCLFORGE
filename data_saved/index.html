@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCL Forge | Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Fira Code', monospace;
+      color: #fefce8;
+      background: linear-gradient(135deg, #1a1407, #0b0b0b, #332b03);
+      background-size: 400% 400%;
+      animation: bgMove 10s ease-in-out infinite;
+      min-height: 100vh;
+    }
+
+    @keyframes bgMove {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(250, 204, 21, 0.25);
+      z-index: 50;
+    }
+
+    .navbar h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #facc15, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
+    }
+
+    .profile-menu { position: relative; }
+
+    .profile-button {
+      background: rgba(234, 179, 8, 0.15);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      color: #facc15;
+      border-radius: 0.6rem;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .profile-button:hover {
+      background: rgba(250, 204, 21, 0.3);
+      box-shadow: 0 0 15px rgba(250, 204, 21, 0.3);
+    }
+
+    .dropdown {
+      position: absolute;
+      right: 0;
+      margin-top: 0.5rem;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      border-radius: 0.5rem;
+      display: none;
+      flex-direction: column;
+      width: 180px;
+      box-shadow: 0 0 15px rgba(250, 204, 21, 0.25);
+    }
+
+    .dropdown.active { display: flex; }
+
+    .dropdown button {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: #fef9c3;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .dropdown button:hover {
+      background: rgba(250, 204, 21, 0.15);
+      color: white;
+    }
+
+    .dashboard {
+      margin-top: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem;
+      color: #fef9c3;
+      animation: fadein 1s ease;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard h2 {
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+      color: #fde68a;
+      font-weight: 700;
+    }
+
+    .dashboard p {
+      font-size: 1.1rem;
+      color: #fcd34d;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #facc15;
+    }
+
+    .footer span { color: #fef08a; font-weight: 600; }
+
+    #resetModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .modal-box {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 35px rgba(250, 204, 21, 0.3);
+      text-align: center;
+      animation: fadein 0.4s ease;
+    }
+
+    .modal-box input {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.6rem;
+      border-radius: 0.4rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+      color: #fef9c3;
+    }
+
+    .modal-box input:focus {
+      outline: none;
+      border-color: #facc15;
+      box-shadow: 0 0 10px #facc15;
+    }
+
+    .modal-btn {
+      width: 100%;
+      margin-top: 1rem;
+      background: linear-gradient(90deg, #facc15, #fbbf24, #f59e0b);
+      color: #111827;
+      font-weight: 600;
+      border: none;
+      padding: 0.6rem;
+      border-radius: 0.5rem;
+      transition: 0.3s;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(250, 204, 21, 0.4);
+    }
+
+    #closeModal {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      color: #facc15;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #closeModal:hover { color: #fff; }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <h1>TCL Forge Dashboard</h1>
+    <div class="profile-menu">
+      <button class="profile-button" id="profileBtn">
+        <i class="fa-solid fa-user"></i>
+        <span id="usernameDisplay">Loading...</span>
+        <i class="fa-solid fa-chevron-down text-xs"></i>
+      </button>
+      <div class="dropdown" id="profileDropdown">
+        <button id="resetPasswordBtn"><i class="fa-solid fa-key mr-2"></i>Reset Password</button>
+        <button id="logoutBtn"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="dashboard">
+    <h2 id="welcomeHeading">Welcome</h2>
+    <p id="userInfo">Access your personalized TCL Forge environment. Manage your tools, settings, and credentials securely from this dashboard.</p>
+  </section>
+
+  <div id="resetModal" class="flex">
+    <div class="modal-box relative">
+      <i id="closeModal" class="fa-solid fa-xmark"></i>
+      <h2 class="text-2xl font-semibold text-yellow-300 mb-4">Reset Password</h2>
+      <input type="password" id="oldPassword" placeholder="Current Password" />
+      <input type="password" id="newPassword" placeholder="New Password" />
+      <input type="password" id="confirmPassword" placeholder="Confirm New Password" />
+      <button class="modal-btn" onclick="resetPassword()">Update Password</button>
+      <p id="resetMessage" class="text-sm mt-3 text-yellow-200"></p>
+    </div>
+  </div>
+
+  <div class="footer">© 2025 TCL Forge | Built by <span>Kunal Saraswat</span></div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:8000";
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const token = localStorage.getItem("access");
+    const email = localStorage.getItem("email");
+
+    if (!token) {
+      window.location.href = "/"; // ✅ redirects properly
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.username) {
+        document.getElementById("usernameDisplay").textContent = data.username;
+        document.getElementById("welcomeHeading").textContent = `Welcome, ${data.username}`;
+      } else {
+        const user = email ? email.split("@")[0] : "User";
+        document.getElementById("usernameDisplay").textContent = user;
+        document.getElementById("welcomeHeading").textContent = `Welcome, ${user}`;
+      }
+    } catch (err) {
+      const user = email ? email.split("@")[0] : "User";
+      document.getElementById("usernameDisplay").textContent = user;
+      document.getElementById("welcomeHeading").textContent = `Welcome, ${user}`;
+    }
+  });
+
+  // Dropdown toggle
+  document.getElementById("profileBtn").addEventListener("click", () => {
+    document.getElementById("profileDropdown").classList.toggle("active");
+  });
+
+  // ✅ Fixed logout handler
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "/"; // ✅ Redirects via Django's home() view
+  });
+
+  // Reset modal controls
+  const resetModal = document.getElementById("resetModal");
+  document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+    resetModal.style.display = "flex";
+  });
+  document.getElementById("closeModal").addEventListener("click", () => {
+    resetModal.style.display = "none";
+  });
+
+  // Password reset
+  async function resetPassword() {
+    const oldPass = document.getElementById("oldPassword").value.trim();
+    const newPass = document.getElementById("newPassword").value.trim();
+    const confirmPass = document.getElementById("confirmPassword").value.trim();
+    const msg = document.getElementById("resetMessage");
+
+    if (!oldPass || !newPass || !confirmPass) {
+      msg.textContent = "All fields are required.";
+      msg.style.color = "#ff7070";
+      return;
+    }
+
+    if (newPass !== confirmPass) {
+      msg.textContent = "New passwords do not match.";
+      msg.style.color = "#ff7070";
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/auth-reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("access"),
+        },
+        body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        msg.textContent = "Password successfully updated.";
+        msg.style.color = "#a7f3d0";
+        setTimeout(() => {
+          resetModal.style.display = "none";
+          document.getElementById("oldPassword").value = "";
+          document.getElementById("newPassword").value = "";
+          document.getElementById("confirmPassword").value = "";
+        }, 1500);
+      } else {
+        msg.textContent = data.error || "Failed to reset password.";
+        msg.style.color = "#ff7070";
+      }
+    } catch {
+      msg.textContent = "Server error. Try again.";
+      msg.style.color = "#ff7070";
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TCL Forge | Login Portal</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        /* ========================================
+           ⚡ ANIMATIONS
+        ======================================== */
+        @keyframes glowPulse {
+            0%, 100% {
+                text-shadow: 0 0 15px rgba(250, 204, 21, 0.6),
+                    0 0 30px rgba(250, 204, 21, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 25px rgba(250, 204, 21, 1),
+                    0 0 50px rgba(250, 204, 21, 0.8);
+            }
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes shimmer {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* ========================================
+           🌌 GLOBAL STYLES
+        ======================================== */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Fira Code', monospace;
+            color: #fefce8;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1407, #0b0b0b, #332b03);
+            background-size: 400% 400%;
+            animation: bgMove 10s ease-in-out infinite;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(250, 204, 21, 0.15), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(253, 224, 71, 0.12), transparent 60%);
+            animation: shimmer 12s infinite alternate;
+            z-index: 0;
+        }
+
+        .animate-glow {
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        .animate-fadein {
+            animation: fadein 1.6s ease forwards;
+        }
+
+        /* ========================================
+           🧊 CARD / INPUT / BUTTON STYLING
+        ======================================== */
+        .glass {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(234, 179, 8, 0.25);
+            backdrop-filter: blur(14px);
+            border-radius: 1rem;
+            box-shadow: 0 0 25px rgba(250, 204, 21, .2);
+            transition: all .3s;
+        }
+
+        .glass:hover {
+            box-shadow: 0 0 45px rgba(250, 204, 21, .35);
+        }
+
+        .tcl-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            color: #fef9c3;
+            padding: .6rem .9rem;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .tcl-input:focus {
+            outline: none;
+            border-color: #facc15;
+            box-shadow: 0 0 12px #facc15;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(90deg, #facc15, #fbbf24, #f59e0b);
+            color: #111827;
+            font-weight: 600;
+            border: none;
+            padding: .7rem;
+            border-radius: .6rem;
+            box-shadow: 0 0 25px rgba(250, 204, 21, .3);
+            transition: all .3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.15);
+            box-shadow: 0 0 30px rgba(250, 204, 21, .4);
+        }
+
+        /* ========================================
+           💻 TERMINAL PANEL
+        ======================================== */
+        .terminal {
+            background: rgba(15, 23, 42, 0.96);
+            border: 1px solid rgba(250, 204, 21, 0.25);
+            color: #facc15;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 520px;
+            font-size: .9rem;
+            box-shadow: 0 0 25px rgba(250, 204, 21, .25);
+            overflow-y: auto;
+            height: 340px;
+            z-index: 2;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background-color: #fde047;
+            animation: blink 1s infinite;
+            margin-left: 4px;
+        }
+
+        /* ========================================
+           ✨ HEADER / FOOTER / MISC
+        ======================================== */
+        header p {
+            text-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+        }
+
+        .action-buttons {
+            position: fixed;
+            top: 20px;
+            right: 25px;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-btn {
+            color: #facc15;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            border-radius: 50%;
+            padding: 10px 12px;
+            font-size: 1.4rem;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.25);
+        }
+
+        .action-btn:hover {
+            color: #111;
+            background: #facc15;
+            transform: scale(1.1);
+            box-shadow: 0 0 18px rgba(250, 204, 21, 0.6);
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #facc15;
+            z-index: 20;
+        }
+
+        .footer span {
+            color: #fef08a;
+            font-weight: 600;
+        }
+
+        #msgBox {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 25px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            color: #facc15;
+            font-size: 0.9rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ================= HEADER ================= -->
+    <header class="absolute top-0 left-0 w-full text-center py-10 select-none">
+        <h1 class="text-5xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-amber-500 animate-glow">
+            TCLFORGE LOGIN PORTAL
+        </h1>
+        <p class="text-yellow-200 text-sm sm:text-base mt-3 tracking-widest font-light italic animate-fadein">
+            "Code. Compile. Conquer — Where Commands Become Power."
+        </p>
+    </header>
+
+    <!-- ================= LINKEDIN BUTTON ================= -->
+    <div class="action-buttons">
+        <a href="https://www.linkedin.com/in/kunalsaraswat/" target="_blank" class="action-btn" title="LinkedIn">
+            <i class="fab fa-linkedin"></i>
+        </a>
+    </div>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <div id="mainContent" class="flex flex-col lg:flex-row w-full h-screen relative z-10">
+        <!-- TERMINAL SECTION -->
+        <div class="hidden lg:flex flex-col justify-center items-center w-1/2 relative">
+            <div class="terminal z-10 font-mono">
+                <pre id="terminalText"></pre><span class="cursor"></span>
+            </div>
+        </div>
+
+        <!-- LOGIN / SIGNUP / FORGOT SECTIONS -->
+        <div class="flex-1 flex justify-center items-center p-8 relative">
+            <div class="glass w-full max-w-md p-8 z-10 text-center">
+                <h1 class="text-3xl font-bold text-yellow-300 mb-6">
+                    <i class="fa-solid fa-code mr-2"></i>Forge Access
+                </h1>
+
+                <!-- LOGIN FORM -->
+                <div id="loginForm">
+                    <input class="tcl-input mb-4" type="email" id="loginEmail" placeholder="Username / Email" />
+                    <input class="tcl-input mb-4" type="password" id="loginPass" placeholder="Password" />
+                    <button class="btn-primary mt-3" onclick="login()">forge_login</button>
+                    <p class="text-sm text-yellow-200 mt-6">
+                        <span class="text-yellow-400 cursor-pointer" onclick="toggleForm('forgot')">forgot_password</span> |
+                        Need a new account?
+                        <span class="text-yellow-400 cursor-pointer" onclick="toggleForm('signup')">forge_signup</span>
+                    </p>
+                </div>
+
+                <!-- SIGNUP FORM -->
+                <div id="signupForm" class="hidden">
+                    <input class="tcl-input mb-4" type="text" id="signupName" placeholder="Full Name" />
+                    <input class="tcl-input mb-4" type="email" id="signupEmail" placeholder="Email Address" />
+                    <input class="tcl-input mb-4" type="password" id="signupPass" placeholder="Password" />
+                    <button class="btn-primary mt-3" onclick="signup()">forge_register</button>
+                    <p class="text-sm text-yellow-200 mt-6">
+                        Already registered?
+                        <span class="text-yellow-400 cursor-pointer" onclick="toggleForm('login')">forge_login</span>
+                    </p>
+                </div>
+
+                <!-- FORGOT PASSWORD FORM -->
+                <div id="forgotForm" class="hidden">
+                    <input class="tcl-input mb-4" type="email" id="resetEmail" placeholder="Enter registered email" />
+                    <button class="btn-primary mb-3" onclick="sendOTP()">send_otp</button>
+                    <input class="tcl-input mb-4" type="text" id="resetOtp" placeholder="Enter OTP" />
+                    <input class="tcl-input mb-4" type="password" id="newPassword" placeholder="Enter new password" />
+                    <button class="btn-primary mt-2" onclick="resetPassword()">reset_password</button>
+                    <p class="text-sm text-yellow-200 mt-6">
+                        Back to
+                        <span class="text-yellow-400 cursor-pointer" onclick="toggleForm('login')">forge_login</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <div id="msgBox"></div>
+    <div class="footer">© 2025 TCL Forge | Built by <span>Kunal Saraswat</span></div>
+
+    <!-- ================= SCRIPT SECTION ================= -->
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        // Terminal simulation
+        const lines = [
+            'puts "Launching TCL Forge..."',
+            'puts "Initializing Django Backend..."',
+            'puts "Connecting MongoDB..."',
+            'puts "Ready for forge_login command"',
+            'forge_ready%>'
+        ];
+
+        let i = 0, c = 0;
+        function type() {
+            const t = document.getElementById("terminalText");
+            if (i >= lines.length) return;
+            const l = lines[i];
+            if (c < l.length) {
+                t.textContent += l.charAt(c++);
+                setTimeout(type, 30);
+            } else {
+                t.textContent += "\n";
+                c = 0;
+                i++;
+                setTimeout(type, 300);
+            }
+        }
+        type();
+
+        // Message popup
+        function showMessage(msg, color = "#facc15") {
+            const b = document.getElementById("msgBox");
+            b.textContent = msg;
+            b.style.color = color;
+            b.style.opacity = "1";
+            setTimeout(() => (b.style.opacity = "0"), 2500);
+        }
+
+        // Form toggler
+        function toggleForm(t) {
+            ["loginForm", "signupForm", "forgotForm"].forEach(id => document.getElementById(id).classList.add("hidden"));
+            document.getElementById(t + "Form").classList.remove("hidden");
+        }
+
+        // ENTER key handler
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                const loginVisible = !document.getElementById("loginForm").classList.contains("hidden");
+                const signupVisible = !document.getElementById("signupForm").classList.contains("hidden");
+                const forgotVisible = !document.getElementById("forgotForm").classList.contains("hidden");
+
+                if (loginVisible) login();
+                else if (signupVisible) signup();
+                else if (forgotVisible) resetPassword();
+            }
+        });
+
+        // LOGIN
+        async function login() {
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPass").value.trim();
+
+            if (!email || !password)
+                return showMessage('puts "Missing credentials"', "#ff7070");
+
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.access) {
+                    localStorage.setItem("access", data.access);
+                    localStorage.setItem("refresh", data.refresh);
+
+                    showMessage(`puts "Access Granted — Welcome ${email}"`, "#a7f3d0");
+                    setTimeout(() => (window.location.href = "/index"), 1000);
+                } else {
+                    showMessage(`puts "${data.error || data.detail || "Invalid credentials"}"`, "#ff7070");
+                }
+            } catch (e) {
+                showMessage('puts "Server error. Try again later."', "#ff7070");
+            }
+        }
+
+        // SIGNUP
+        async function signup() {
+            const name = document.getElementById("signupName").value.trim();
+            const email = document.getElementById("signupEmail").value.trim();
+            const password = document.getElementById("signupPass").value.trim();
+
+            if (!name || !email || !password)
+                return showMessage('puts "All fields required"', "#ff7070");
+
+            try {
+                const res = await fetch(`${API_BASE}/signup`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: name, email, password }),
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    showMessage('puts "User registered — Please login"', "#a7f3d0");
+                    toggleForm("login");
+                } else {
+                    showMessage(`puts "${data.error || data.detail || "Signup failed"}"`, "#ff7070");
+                }
+            } catch (e) {
+                showMessage('puts "Server error during signup"', "#ff7070");
+            }
+        }
+
+        // SEND OTP
+        async function sendOTP() {
+            const email = document.getElementById("resetEmail").value.trim();
+            if (!email) return showMessage('puts "Enter your email"', "#ff7070");
+
+            try {
+                const res = await fetch(`${API_BASE}/send-otp`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email }),
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showMessage('puts "OTP sent to your email"', "#a7f3d0");
+                } else {
+                    showMessage(`puts "${data.error || data.detail || "Failed to send OTP"}"`, "#ff7070");
+                }
+            } catch (e) {
+                showMessage('puts "Server error while sending OTP"', "#ff7070");
+            }
+        }
+
+        // RESET PASSWORD
+        async function resetPassword() {
+            const email = document.getElementById("resetEmail").value.trim();
+            const otp = document.getElementById("resetOtp").value.trim();
+            const password = document.getElementById("newPassword").value.trim();
+
+            if (!email || !otp || !password)
+                return showMessage('puts "All fields required"', "#ff7070");
+
+            try {
+                const res = await fetch(`${API_BASE}/reset-password`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, otp, password }),
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showMessage('puts "Password reset successful"', "#a7f3d0");
+                    setTimeout(() => toggleForm("login"), 1200);
+                } else {
+                    showMessage(`puts "${data.error || data.detail || "Invalid OTP"}"`, "#ff7070");
+                }
+            } catch (e) {
+                showMessage('puts "Server error during password reset"', "#ff7070");
+            }
+        }
+    </script>
+</body>
+</html>

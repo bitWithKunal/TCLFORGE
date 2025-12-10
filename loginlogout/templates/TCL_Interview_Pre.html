@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCL Interview Preparation | TCL Forge</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Prism for syntax highlighting -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tcl.min.js"></script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #e2e8f0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+    .glow-text {
+      text-shadow: 0 0 10px #a855f7, 0 0 20px #9333ea;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      backdrop-filter: blur(12px);
+      border-radius: 0.9rem;
+      transition: all 0.25s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 18px rgba(147, 51, 234, 0.4);
+      border-color: rgba(168, 85, 247, 0.8);
+    }
+    details summary {
+      list-style: none;
+      cursor: pointer;
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] summary .q-title {
+      color: #a855f7;
+    }
+    .fade-in {
+      animation: fadeIn 0.35s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0);   }
+    }
+    .control-btn {
+      border-radius: 9999px;
+      background-color: #1e293b;
+      border: 1px solid #475569;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+    }
+    .control-btn:hover {
+      background-color: #334155;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.6);
+    }
+    .primary-pill {
+      background-image: linear-gradient(to right, #7c3aed, #a855f7);
+      color: white;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+    }
+    .primary-pill:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+    }
+    .search-box {
+      background-color: #020617;
+      border-radius: 9999px;
+      border: 1px solid #475569;
+      color: #e5e7eb;
+      transition: all 0.2s ease;
+      font-size: 0.85rem;
+    }
+    .search-box:focus {
+      outline: none;
+      border-color: #a855f7;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+    }
+
+    /* Profile Dropdown Styles */
+    .profile-container {
+      position: relative;
+    }
+
+    .btn-profile {
+      background: #f59e0b;
+      color: #1e293b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-profile:hover {
+      background: #f97316;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .dropdown-username {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-top: 4px;
+    }
+
+    .dropdown-menu {
+      padding: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    .dropdown-item.logout {
+      border-top: 1px solid #334155;
+      color: #ff6b6b;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #f1f5f9;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+
+    .form-message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+
+    .form-message.active {
+      display: block;
+    }
+
+    .form-message.success {
+      background: #10b981;
+      color: #ecfdf5;
+    }
+
+    .form-message.error {
+      background: #ef4444;
+      color: #fecaca;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 10px 16px;
+      background: #f59e0b;
+      color: #1e293b;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+      background: #f97316;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-fuchsia-700 via-purple-700 to-violet-700 shadow-lg py-4">
+    <div class="container mx-auto px-4 sm:px-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-terminal text-yellow-300 text-xl"></i>
+        <h1 class="text-2xl sm:text-3xl font-extrabold glow-text">TCL Interview Preparation</h1>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="index.html"
+           class="px-3 sm:px-4 py-2 rounded-md bg-slate-900/70 hover:bg-slate-800 text-sm flex items-center border border-slate-700 transition">
+          <i class="fa-solid fa-arrow-left mr-2"></i> Back to Forge
+        </a>
+
+        <!-- Profile Button -->
+        <div class="profile-container">
+          <button class="btn-profile" id="profileBtn">
+            <i class="fas fa-user"></i>
+            <span id="usernameDisplay">Profile</span>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              Logged in as
+              <div class="dropdown-username" id="usernameDisplayDropdown">User</div>
+            </div>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" id="resetPasswordBtn">
+                <i class="fas fa-key"></i>
+                Change Password
+              </button>
+              <button class="dropdown-item logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="flex-1 container mx-auto px-4 sm:px-6 py-6 sm:py-8 fade-in">
+
+    <!-- Top controls -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-semibold flex items-center mb-1">
+          <i class="fa-solid fa-list-check mr-2 text-yellow-400"></i>
+          100 TCL Commands for PD Interviews
+        </h2>
+        <p class="text-slate-400 text-xs sm:text-sm">
+          Sourced from your "100 must-know TCL commands for Physical Design interviews". Practice questions + exact commands.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:items-end gap-2">
+        <div class="flex items-center gap-2">
+          <span id="question-count" class="text-xs sm:text-sm text-slate-300">
+            100 Questions
+          </span>
+        </div>
+        <div class="flex flex-wrap gap-2 justify-end">
+          <div class="relative">
+            <input id="searchBox" type="text" placeholder="Search question or command..."
+                   class="search-box pl-8 pr-3 py-1.5 sm:py-2 w-52 sm:w-64" />
+            <i class="fa-solid fa-search text-slate-500 absolute left-2.5 top-1.5 sm:top-2 text-xs"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary controls -->
+    <div class="flex flex-wrap gap-2 mb-5">
+      <button id="btn-show-all" class="control-btn px-3 py-1.5 flex items-center gap-1">
+        <i class="fa-solid fa-eye"></i><span>Show All</span>
+      </button>
+      <button id="btn-hide-all" class="control-btn px-3 py-1.5 flex items-center gap-1">
+        <i class="fa-solid fa-eye-slash"></i><span>Hide All</span>
+      </button>
+      <button id="btn-shuffle" class="primary-pill px-3 py-1.5 flex items-center gap-1">
+        <i class="fa-solid fa-shuffle"></i><span>Practice Mode (Shuffle)</span>
+      </button>
+    </div>
+
+    <!-- Questions grid -->
+    <div id="qa-container" class="grid gap-4 lg:grid-cols-2"></div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="py-4 text-center text-xs sm:text-sm text-slate-500 border-t border-slate-800">
+    <p>
+      Part of <span class="text-violet-400 font-semibold">TCL Forge</span> |
+      Built by <span class="text-yellow-300 font-semibold">Kunal Saraswat</span>
+    </p>
+  </footer>
+
+  <!-- Reset Password Modal -->
+  <div class="modal" id="resetModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Change Password</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" class="form-input" id="oldPassword" placeholder="Enter current password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+      </div>
+
+      <div class="form-message" id="resetMessage"></div>
+      <button class="btn-submit" onclick="resetPassword()">Update Password</button>
+    </div>
+  </div>
+
+  <script>
+    // Initialize auth and profile functionality
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const email = localStorage.getItem("email");
+
+      if (!token) {
+        // Redirect to login if no token
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.username) {
+          document.getElementById("usernameDisplay").textContent = data.username;
+          document.getElementById("usernameDisplayDropdown").textContent = data.username;
+        } else {
+          const user = email ? email.split("@")[0] : "User";
+          document.getElementById("usernameDisplay").textContent = user;
+          document.getElementById("usernameDisplayDropdown").textContent = user;
+        }
+      } catch (err) {
+        const user = email ? email.split("@")[0] : "User";
+        document.getElementById("usernameDisplay").textContent = user;
+        document.getElementById("usernameDisplayDropdown").textContent = user;
+      }
+
+      // Initialize interview questions
+      initializeInterviewPrep();
+    });
+
+    // 100 Q + command pairs (adapted from your PDF)
+    const originalQuestions = [
+      { id: 1,  question: "How do you set a variable?", command: "set var_name value" },
+      { id: 2,  question: "How do you print a variable's value?", command: "puts $var_name" },
+      { id: 3,  question: "How do you do a loop in TCL?", command: "foreach item $list { puts $item }" },
+      { id: 4,  question: "How do you check conditionals in TCL?", command: "if {$a > 5} { puts \"yes\" }" },
+      { id: 5,  question: "How do you source a script?", command: "source script.tcl" },
+      { id: 6,  question: "How do you define a procedure?", command: "proc name {args} { body }" },
+      { id: 7,  question: "How do you append to a variable?", command: "append a $b" },
+      { id: 8,  question: "How do you concatenate strings?", command: "set x [concat $a $b]" },
+      { id: 9,  question: "How do you exit the script?", command: "exit" },
+      { id: 10, question: "How do you comment in TCL?", command: "# This is a comment" },
+
+      { id: 11, question: "How do you read a design netlist?", command: "read_verilog design.v" },
+      { id: 12, question: "How do you read libraries?", command: "read_libs liberty.lib" },
+      { id: 13, question: "How do you link the design?", command: "link_design top" },
+      { id: 14, question: "How do you set the search path?", command: "set_app_var search_path \".\"" },
+      { id: 15, question: "How do you read a DEF file?", command: "read_def design.def" },
+
+      { id: 16, question: "How do you read a LEF file?", command: "read_lef tech.lef" },
+      { id: 17, question: "How do you write out a netlist?", command: "write_verilog out.v" },
+      { id: 18, question: "How do you write a DEF file?", command: "write_def design_out.def" },
+      { id: 19, question: "How do you get a list of cells?", command: "get_cells *" },
+      { id: 20, question: "How do you get design ports?", command: "get_ports" },
+
+      { id: 21, question: "How do you create a floorplan?", command: "create_floorplan -core ..." },
+      { id: 22, question: "How do you create a boundary?", command: "create_boundary -box {x1 y1 x2 y2}" },
+      { id: 23, question: "How do you define power rings/straps?", command: "add_stripes ; # or add_rings" },
+      { id: 24, question: "How do you define placement blockages?", command: "create_placement_blockage" },
+      { id: 25, question: "How do you define routing blockages?", command: "create_routing_blockage" },
+
+      { id: 26, question: "How do you set macro orientation?", command: "set_attribute [get_cells macro_name] orientation R0" },
+      { id: 27, question: "How do you place macros manually?", command: "set_attribute [get_cells macro_name] location {x y}" },
+      { id: 28, question: "How do you check floorplan utilization?", command: "report_utilization" },
+      { id: 29, question: "How do you report the floorplan?", command: "report_floorplan" },
+      { id: 30, question: "How do you get area of a module?", command: "report_area" },
+
+      { id: 31, question: "How do you perform placement?", command: "place_design" },
+      { id: 32, question: "How do you check placement congestion?", command: "report_congestion" },
+      { id: 33, question: "How do you check legalization?", command: "check_legality" },
+      { id: 34, question: "How do you move a cell?", command: "move_cell cell_name -to {x y}" },
+      { id: 35, question: "How do you report cell density?", command: "report_density" },
+
+      { id: 36, question: "How do you report placed instances?", command: "get_cells -filter \"is_placed == true\"" },
+      { id: 37, question: "How do you report unplaced cells?", command: "get_cells -filter \"is_placed == false\"" },
+      { id: 38, question: "How do you check design rule violations?", command: "report_drc" },
+      { id: 39, question: "How do you report placement utilization?", command: "report_utilization -placement" },
+      { id: 40, question: "How do you get a cell's location?", command: "get_attribute [get_cells cell_name] location" },
+
+      { id: 41, question: "How do you run CTS?", command: "create_clock_tree" },
+      { id: 42, question: "How do you define a clock?", command: "create_clock -name clk -period 10 [get_ports clk]" },
+      { id: 43, question: "How do you set clock uncertainty?", command: "set_clock_uncertainty 0.2 [get_clocks clk]" },
+      { id: 44, question: "How do you check/balance clock skew?", command: "report_clock_tree" },
+      { id: 45, question: "How do you get clock buffers?", command: "get_cells -filter \"is_clock_buffer == true\"" },
+
+      { id: 46, question: "How do you report clock latency?", command: "report_clock -latency" },
+      { id: 47, question: "How do you trace a clock path?", command: "trace_clock clk" },
+      { id: 48, question: "How do you buffer a clock manually?", command: "insert_buffer" },
+      { id: 49, question: "How do you check the clock tree?", command: "check_clock_tree" },
+      { id: 50, question: "How do you disable CTS for certain nets?", command: "set_dont_touch_network" },
+
+      { id: 51, question: "How do you start global routing?", command: "route_design -global" },
+      { id: 52, question: "How do you start detailed routing?", command: "route_design -detail" },
+      { id: 53, question: "How do you check routing violations?", command: "report_drc -routing" },
+      { id: 54, question: "How do you fix shorts?", command: "repair_design -shorts" },
+      { id: 55, question: "How do you get routed nets?", command: "get_nets -routed" },
+
+      { id: 56, question: "How do you extract parasitics?", command: "extract_parasitics" },
+      { id: 57, question: "How do you perform RC extraction?", command: "rc_extract" },
+      { id: 58, question: "How do you report wirelength?", command: "report_wirelength" },
+      { id: 59, question: "How do you visualize congestion map?", command: "report_congestion -map congestion.rpt" },
+      { id: 60, question: "How do you generate a routed DEF?", command: "write_def routed.def" },
+
+      { id: 61, question: "How do you run timing analysis?", command: "report_timing" },
+      { id: 62, question: "How do you report critical paths?", command: "report_timing -max_paths 10" },
+      { id: 63, question: "How do you set input delay?", command: "set_input_delay 2.5 -clock clk [get_ports in]" },
+      { id: 64, question: "How do you set output delay?", command: "set_output_delay 1.0 -clock clk [get_ports out]" },
+      { id: 65, question: "How do you define drive strength?", command: "set_drive 0.5 [get_ports in]" },
+
+      { id: 66, question: "How do you set load on an output port?", command: "set_load 0.75 [get_ports out]" },
+      { id: 67, question: "How do you check hold/setup violations?", command: "report_constraints -all_violators" },
+      { id: 68, question: "How do you set a multicycle path?", command: "set_multicycle_path 2 -setup -from X -to Y" },
+      { id: 69, question: "How do you set a false path?", command: "set_false_path -from X -to Y" },
+      { id: 70, question: "How do you trace a timing arc?", command: "report_timing -from A -to B" },
+
+      { id: 71, question: "How do you run power analysis?", command: "report_power" },
+      { id: 72, question: "How do you define power nets?", command: "set_power_net VDD" },
+      { id: 73, question: "How do you define ground nets?", command: "set_ground_net VSS" },
+      { id: 74, question: "How do you set switching activity?", command: "read_saif ; # or set_switching_activity" },
+      { id: 75, question: "How do you get leakage power?", command: "report_power -leakage" },
+
+      { id: 76, question: "How do you get dynamic power?", command: "report_power -dynamic" },
+      { id: 77, question: "How do you annotate an activity file?", command: "read_saif" },
+      { id: 78, question: "How do you generate a power report?", command: "report_power > power.rpt" },
+      { id: 79, question: "How do you set toggle rate?", command: "set_switching_activity" },
+      { id: 80, question: "How do you report power per instance?", command: "report_power -hier" },
+
+      { id: 81, question: "How do you run DRC?", command: "report_drc" },
+      { id: 82, question: "How do you run LVS?", command: "run_lvs" },
+      { id: 83, question: "How do you compare netlists?", command: "compare_netlists" },
+      { id: 84, question: "How do you check connectivity?", command: "report_connectivity" },
+      { id: 85, question: "How do you report shorts/opens?", command: "report_net_status" },
+
+      { id: 86, question: "How do you check missing vias?", command: "report_missing_vias" },
+      { id: 87, question: "How do you verify antenna rules?", command: "report_antennas" },
+      { id: 88, question: "How do you dump net RC?", command: "write_parasitics -format spef" },
+      { id: 89, question: "How do you list DRC violations?", command: "report_drc -violations" },
+      { id: 90, question: "How do you check final GDS?", command: "write_gds final.gds" },
+
+      { id: 91, question: "How do you run optimization?", command: "optimize_design" },
+      { id: 92, question: "How do you fix hold violations?", command: "repair_hold" },
+      { id: 93, question: "How do you fix setup violations?", command: "optimize_timing" },
+      { id: 94, question: "How do you report utilization?", command: "report_utilization" },
+      { id: 95, question: "How do you report area post-route?", command: "report_area" },
+
+      { id: 96, question: "How do you write an SDF file?", command: "write_sdf final.sdf" },
+      { id: 97, question: "How do you export netlist for backend?", command: "write_verilog final_netlist.v" },
+      { id: 98, question: "How do you save the session?", command: "save_design checkpoint.dcp" },
+      { id: 99, question: "How do you restore a checkpoint?", command: "restore_design checkpoint.dcp" },
+      { id: 100,question: "How do you write all reports / design summary?", command: "report_design_summary" }
+    ];
+
+    let currentQuestions = [...originalQuestions];
+
+    function initializeInterviewPrep() {
+      const qaContainer   = document.getElementById("qa-container");
+      const searchBox     = document.getElementById("searchBox");
+      const btnShowAll    = document.getElementById("btn-show-all");
+      const btnHideAll    = document.getElementById("btn-hide-all");
+      const btnShuffle    = document.getElementById("btn-shuffle");
+      const questionCount = document.getElementById("question-count");
+
+      function renderQuestions(list) {
+        currentQuestions = [...list];
+        qaContainer.innerHTML = "";
+
+        if (!list.length) {
+          qaContainer.innerHTML =
+            "<p class='text-slate-400 text-center col-span-full mt-6'>No matching questions found.</p>";
+          questionCount.textContent = "0 Questions";
+          return;
+        }
+
+        list.forEach(({ id, question, command }) => {
+          const details = document.createElement("details");
+          details.className = "glass-card qa-item p-4 sm:p-5";
+
+          details.innerHTML = `
+            <summary class="flex items-start gap-2">
+              <span class="text-xs font-mono text-yellow-300 pt-1">${String(id).padStart(2, "0")}.</span>
+              <span class="q-title text-sm sm:text-base font-semibold">${question}</span>
+            </summary>
+            <div class="mt-3 pl-6 text-xs sm:text-sm space-y-2">
+              <div class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800 text-[0.65rem] uppercase tracking-wide text-slate-300 border border-slate-600">
+                <i class="fa-solid fa-code mr-1"></i> TCL Command
+              </div>
+              <pre class="language-tcl text-xs rounded-md bg-slate-900/80 border border-slate-700 overflow-x-auto">
+  <code class="language-tcl">${command.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</code></pre>
+            </div>
+          `;
+          qaContainer.appendChild(details);
+        });
+
+        questionCount.textContent = `${list.length} Question${list.length > 1 ? "s" : ""}`;
+        Prism.highlightAll();
+      }
+
+      function showAll() {
+        document.querySelectorAll(".qa-item").forEach(d => d.open = true);
+      }
+
+      function hideAll() {
+        document.querySelectorAll(".qa-item").forEach(d => d.open = false);
+      }
+
+      function shuffleArray(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      // Search handler
+      searchBox.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = originalQuestions.filter(({ question, command, id }) =>
+          question.toLowerCase().includes(term) ||
+          command.toLowerCase().includes(term) ||
+          String(id).includes(term)
+        );
+        renderQuestions(filtered);
+      });
+
+      // Show all / Hide all
+      btnShowAll.addEventListener("click", showAll);
+      btnHideAll.addEventListener("click", hideAll);
+
+      // Practice mode (shuffle)
+      btnShuffle.addEventListener("click", () => {
+        const shuffled = shuffleArray(currentQuestions);
+        renderQuestions(shuffled);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      // Initial render
+      renderQuestions(originalQuestions);
+    }
+
+    /* ---------- Profile dropdown functionality ---------- */
+    document.getElementById("profileBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.getElementById("profileDropdown").classList.toggle("active");
+    });
+
+    document.addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "/";
+    });
+
+    // Reset password modal
+    document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+      document.getElementById("resetModal").classList.add("active");
+    });
+
+    document.getElementById("closeModal").addEventListener("click", () => {
+      document.getElementById("resetModal").classList.remove("active");
+    });
+
+    document.getElementById("resetModal").addEventListener("click", (e) => {
+      if (e.target === document.getElementById("resetModal")) {
+        document.getElementById("resetModal").classList.remove("active");
+      }
+    });
+
+    // Password reset function
+    async function resetPassword() {
+      const oldPass = document.getElementById("oldPassword").value.trim();
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPassword").value.trim();
+      const msgEl = document.getElementById("resetMessage");
+
+      if (!oldPass || !newPass || !confirmPass) {
+        showMessage(msgEl, "All fields are required.", "error");
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showMessage(msgEl, "New passwords do not match.", "error");
+        return;
+      }
+
+      if (newPass.length < 8) {
+        showMessage(msgEl, "Password must be at least 8 characters.", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/auth-reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("access"),
+          },
+          body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showMessage(msgEl, "Password updated successfully!", "success");
+          setTimeout(() => {
+            document.getElementById("resetModal").classList.remove("active");
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+            msgEl.classList.remove("active");
+          }, 1500);
+        } else {
+          showMessage(msgEl, data.error || "Failed to update password.", "error");
+        }
+      } catch (err) {
+        showMessage(msgEl, "Server error. Please try again.", "error");
+      }
+    }
+
+    function showMessage(el, text, type) {
+      el.textContent = text;
+      el.className = `form-message active ${type}`;
+    }
+
+    // Make functions available globally
+    window.resetPassword = resetPassword;
+  </script>
+</body>
+</html>

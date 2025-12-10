@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCL Forge | Interactive Learning Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box {
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #94a3b8;
+      width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      outline: none;
+      width: 100%;
+    }
+
+    .navbar-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-live, .btn-challenges, .btn-manual, .btn-notes, .btn-interview, .btn-cheat, .btn-linkedin {
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-live { background: #10b981; }
+    .btn-challenges { background: #ec4899; }
+    .btn-manual { background: #6366f1; }
+    .btn-notes { background: #a855f7; }
+    .btn-interview { background: #0ea5e9; }
+    .btn-cheat { background: #06b6d4; }
+    .btn-linkedin { background: #0a66c2; }
+
+    .btn-live:hover, .btn-challenges:hover, .btn-manual:hover, .btn-notes:hover, .btn-interview:hover, .btn-cheat:hover, .btn-linkedin:hover {
+      opacity: 0.9;
+    }
+
+    .profile-container {
+      position: relative;
+    }
+
+    .btn-profile {
+      background: #f59e0b;
+      color: #1e293b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-profile:hover {
+      background: #f97316;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 200px;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .dropdown-username {
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-top: 4px;
+    }
+
+    .dropdown-menu {
+      padding: 8px 0;
+    }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    .dropdown-item i {
+      width: 16px;
+      text-align: center;
+    }
+
+    .dropdown-item.logout {
+      border-top: 1px solid #334155;
+      color: #ff6b6b;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 57px);
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #1e293b;
+      border-right: 1px solid #334155;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-section {
+      margin-bottom: 24px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+    }
+
+    .progress-bar {
+      background: #334155;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(to right, #fbbf24, #f59e0b);
+      height: 100%;
+      width: 0%;
+    }
+
+    .filter-section {
+      margin-bottom: 24px;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      display: block;
+    }
+
+    .filter-select {
+      width: 100%;
+      padding: 8px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .concepts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: calc(100vh - 500px);
+      overflow-y: auto;
+    }
+
+    .concept-item {
+      padding: 12px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      background: transparent;
+      color: #e2e8f0;
+      border: none;
+      text-align: left;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+    }
+
+    .concept-item:hover {
+      background: #334155;
+    }
+
+    .concept-item.active {
+      background: #334155;
+    }
+
+    .concept-stars {
+      color: #fbbf24;
+      font-size: 12px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0f172a;
+    }
+
+    .header {
+      background: linear-gradient(to right, #334155, #1e293b);
+      padding: 24px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #f1f5f9;
+      margin-bottom: 12px;
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-badge {
+      background: #475569;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    .header-level {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #fbbf24;
+      font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #334155;
+      padding: 0 24px;
+      background: #0f172a;
+    }
+
+    .tab {
+      padding: 16px 24px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: #fbbf24;
+      border-bottom-color: #fbbf24;
+    }
+
+    .tab:hover:not(.active) {
+      color: #cbd5e1;
+    }
+
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .takeaway-section {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #334155;
+    }
+
+    .takeaway-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fbbf24;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .takeaway-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
+
+    .takeaway-item {
+      background: #1e293b;
+      border-left: 4px solid #fbbf24;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e2e8f0;
+    }
+
+    .takeaway-icon {
+      color: #10b981;
+      font-size: 16px;
+    }
+
+    .footer {
+      padding: 24px;
+      border-top: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn-nav {
+      padding: 10px 20px;
+      border-radius: 6px;
+      background: #334155;
+      color: #cbd5e1;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-nav:hover {
+      background: #475569;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #f1f5f9;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+
+    .form-message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+
+    .form-message.active {
+      display: block;
+    }
+
+    .form-message.success {
+      background: #10b981;
+      color: #ecfdf5;
+    }
+
+    .form-message.error {
+      background: #ef4444;
+      color: #fecaca;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 10px 16px;
+      background: #f59e0b;
+      color: #1e293b;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+      background: #f97316;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="navbar-left">
+      <div class="logo">
+        <i class="fas fa-terminal"></i>
+        TCLForge
+      </div>
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search concepts...">
+      </div>
+    </div>
+    <div class="navbar-buttons">
+      <button class="btn-live">
+        <i class="fas fa-play"></i>
+        Live Tcl Runner
+      </button>
+      <button class="btn-challenges">
+        <i class="fas fa-trophy"></i>
+        TCL Challenges
+      </button>
+      <button class="btn-manual">
+        <i class="fas fa-book"></i>
+        TCL Manual
+      </button>
+      <button class="btn-notes">
+        <i class="fas fa-sticky-note"></i>
+        TCL Notes
+      </button>
+      <button class="btn-interview">
+        <i class="fas fa-users"></i>
+        Interview Prep
+      </button>
+      <button class="btn-cheat">
+        <i class="fas fa-list"></i>
+        Cheatsheet
+      </button>
+      <button class="btn-linkedin">
+        <i class="fab fa-linkedin"></i>
+        LinkedIn
+      </button>
+
+      <!-- Profile Dropdown -->
+      <div class="profile-container">
+        <button class="btn-profile" id="profileBtn">
+          <i class="fas fa-user"></i>
+          Profile
+        </button>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="dropdown-header">
+            Logged in as
+            <div class="dropdown-username" id="usernameDisplay">User</div>
+          </div>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" id="resetPasswordBtn">
+              <i class="fas fa-key"></i>
+              Change Password
+            </button>
+            <button class="dropdown-item logout" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-title">
+        <i class="fas fa-list-ul"></i>
+        Concepts
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>Learning Progress</span>
+          <span>0/71</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="filter-section">
+        <label class="filter-label">Filter by Category</label>
+        <select class="filter-select">
+          <option>All Categories</option>
+          <option>Basics</option>
+          <option>Data Types</option>
+          <option>Control Flow</option>
+          <option>Advanced</option>
+        </select>
+      </div>
+
+      <!-- Concepts List -->
+      <div class="concepts-list">
+        <button class="concept-item active">
+          <span>1. Your First TCL Command</span>
+          <span class="concept-stars">★</span>
+        </button>
+        <button class="concept-item">
+          <span>2. Basic Syntax Rules</span>
+          <span class="concept-stars">★</span>
+        </button>
+        <button class="concept-item">
+          <span>3. Variables</span>
+          <span class="concept-stars">★</span>
+        </button>
+        <button class="concept-item">
+          <span>4. Lists</span>
+          <span class="concept-stars">★★</span>
+        </button>
+        <button class="concept-item">
+          <span>5. If Statement</span>
+          <span class="concept-stars">★★</span>
+        </button>
+        <button class="concept-item">
+          <span>6. For Loop</span>
+          <span class="concept-stars">★★</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-title">Select a Concept</div>
+        <div class="header-info">
+          <span class="header-badge">Category</span>
+          <div class="header-level">
+            <i class="fas fa-star"></i>
+            Beginner
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab(event, 'description')">
+          <i class="fas fa-info-circle"></i>
+          Description
+        </button>
+        <button class="tab" onclick="switchTab(event, 'example')">
+          <i class="fas fa-code"></i>
+          Example
+        </button>
+        <button class="tab" onclick="switchTab(event, 'playground')">
+          <i class="fas fa-terminal"></i>
+          Playground
+        </button>
+        <button class="tab" onclick="switchTab(event, 'quiz')">
+          <i class="fas fa-question-circle"></i>
+          Quiz
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <div id="description" class="tab-content active">
+          <p style="margin-bottom: 24px; color: #cbd5e1; line-height: 1.6;">
+            Select a concept from the sidebar to start learning. Each concept includes a detailed description, code examples, an interactive playground to practice, and a quiz to test your knowledge.
+          </p>
+
+          <div class="takeaway-section">
+            <div class="takeaway-title">
+              <i class="fas fa-lightbulb"></i>
+              Key Takeaways
+            </div>
+            <div class="takeaway-grid">
+              <div class="takeaway-item">
+                <i class="takeaway-icon fas fa-check-circle"></i>
+                Select concepts to learn TCL programming
+              </div>
+              <div class="takeaway-item">
+                <i class="takeaway-icon fas fa-check-circle"></i>
+                Practice with interactive code examples
+              </div>
+              <div class="takeaway-item">
+                <i class="takeaway-icon fas fa-check-circle"></i>
+                Test knowledge with quizzes
+              </div>
+              <div class="takeaway-item">
+                <i class="takeaway-icon fas fa-check-circle"></i>
+                Track your learning progress
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="example" class="tab-content" style="color: #cbd5e1;">
+          Example content here
+        </div>
+
+        <div id="playground" class="tab-content" style="color: #cbd5e1;">
+          Playground content here
+        </div>
+
+        <div id="quiz" class="tab-content" style="color: #cbd5e1;">
+          Quiz content here
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <button class="btn-nav">
+          <i class="fas fa-arrow-left"></i>
+          Previous
+        </button>
+        <button class="btn-nav">
+          Next
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div class="modal" id="resetModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Change Password</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" class="form-input" id="oldPassword" placeholder="Enter current password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+      </div>
+
+      <div class="form-message" id="resetMessage"></div>
+      <button class="btn-submit" onclick="resetPassword()">Update Password</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+
+    // Initialize on page load
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("access");
+      const email = localStorage.getItem("email");
+
+      if (!token) {
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/me`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.username) {
+          document.getElementById("usernameDisplay").textContent = data.username;
+        } else {
+          const user = email ? email.split("@")[0] : "User";
+          document.getElementById("usernameDisplay").textContent = user;
+        }
+      } catch (err) {
+        const user = email ? email.split("@")[0] : "User";
+        document.getElementById("usernameDisplay").textContent = user;
+      }
+    });
+
+    // Profile dropdown toggle
+    document.getElementById("profileBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.getElementById("profileDropdown").classList.toggle("active");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+    });
+
+    // Logout handler
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "/";
+    });
+
+    // Reset password modal
+    document.getElementById("resetPasswordBtn").addEventListener("click", () => {
+      document.getElementById("profileDropdown").classList.remove("active");
+      document.getElementById("resetModal").classList.add("active");
+    });
+
+    document.getElementById("closeModal").addEventListener("click", () => {
+      document.getElementById("resetModal").classList.remove("active");
+    });
+
+    // Close modal when clicking outside
+    document.getElementById("resetModal").addEventListener("click", (e) => {
+      if (e.target === document.getElementById("resetModal")) {
+        document.getElementById("resetModal").classList.remove("active");
+      }
+    });
+
+    // Password reset function
+    async function resetPassword() {
+      const oldPass = document.getElementById("oldPassword").value.trim();
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPassword").value.trim();
+      const msgEl = document.getElementById("resetMessage");
+
+      if (!oldPass || !newPass || !confirmPass) {
+        showMessage(msgEl, "All fields are required.", "error");
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showMessage(msgEl, "New passwords do not match.", "error");
+        return;
+      }
+
+      if (newPass.length < 8) {
+        showMessage(msgEl, "Password must be at least 8 characters.", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/auth-reset-password`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("access"),
+          },
+          body: JSON.stringify({ old_password: oldPass, new_password: newPass }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showMessage(msgEl, "Password updated successfully!", "success");
+          setTimeout(() => {
+            document.getElementById("resetModal").classList.remove("active");
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+            msgEl.classList.remove("active");
+          }, 1500);
+        } else {
+          showMessage(msgEl, data.error || "Failed to update password.", "error");
+        }
+      } catch (err) {
+        showMessage(msgEl, "Server error. Please try again.", "error");
+      }
+    }
+
+    function showMessage(el, text, type) {
+      el.textContent = text;
+      el.className = `form-message active ${type}`;
+    }
+
+    // Tab switching
+    function switchTab(event, tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      document.getElementById(tabName).classList.add('active');
+      event.target.closest('.tab').classList.add('active');
+    }
+
+    // Concept selection
+    document.querySelectorAll('.concept-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.concept-item').forEach(el => {
+          el.classList.remove('active');
+        });
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
