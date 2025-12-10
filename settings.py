@@ -4,24 +4,29 @@ import pymongo
 from pathlib import Path
 from datetime import timedelta
 
+# === BASE DIRECTORY ===
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = BASE_DIR / ".env"
 
+# === LOAD ENVIRONMENT VARIABLES ===
 if ENV_PATH.exists():
     load_dotenv(ENV_PATH)
     print(f"✅ Loaded .env from: {ENV_PATH}")
 else:
     print("⚠️ No .env file found — using Render environment variables.")
 
+# === DJANGO CORE SETTINGS ===
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+# ✅ UPDATED HOSTNAME (Render live domain)
 ALLOWED_HOSTS = [
-    "tclforge-server.onrender.com",
+    "tclforge.onrender.com",  # <-- Corrected Render deployment URL
     "localhost",
     "127.0.0.1"
 ]
 
+# === INSTALLED APPS ===
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,6 +41,7 @@ INSTALLED_APPS = [
     "corsheaders",
 ]
 
+# === MIDDLEWARE ===
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
@@ -47,9 +53,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# === URLS & WSGI CONFIG ===
 ROOT_URLCONF = 'tclforge_backend_deploy.urls'
 WSGI_APPLICATION = 'tclforge_backend_deploy.wsgi.application'
 
+# === DATABASE (SQLite) ===
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -57,11 +65,14 @@ DATABASES = {
     }
 }
 
+# === STATIC FILES ===
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# === CORS ===
 CORS_ALLOW_ALL_ORIGINS = True
 
+# === EMAIL SETTINGS ===
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -69,6 +80,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'kunalsaraswat30@gmail.com'
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
+# === MONGODB CONNECTION ===
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME", "TCL_Forge")
 
