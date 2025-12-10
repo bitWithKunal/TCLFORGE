@@ -312,7 +312,11 @@
 
     <!-- ================= SCRIPT SECTION ================= -->
     <script>
-        const API_BASE = "http://127.0.0.1:8000";
+        // 🔹 Auto-detect backend URL: local (dev) or Render (prod)
+const API_BASE = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1")
+  ? "http://127.0.0.1:8000"
+  : "https://tclforge.onrender.com";
+
 
         // Terminal simulation
         const lines = [

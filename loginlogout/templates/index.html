@@ -36,48 +36,45 @@
     }
 
     .navbar {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: #0f172a;
+  border-bottom: 1px solid #1e293b;
+}
 
-    .navbar-left {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-    }
+   .navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: #fbbf24;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: #facc15;
+  gap: 8px;
+}
+
 
     .search-box {
-      background: #334155;
-      border: 1px solid #475569;
-      border-radius: 8px;
-      padding: 8px 12px;
-      color: #94a3b8;
-      width: 200px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+  display: flex;
+  align-items: center;
+  background: #1e293b;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.search-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f1f5f9;
+  margin-left: 6px;
+}
 
-    .search-box input {
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      outline: none;
-      width: 100%;
-    }
 
     .navbar-buttons {
       display: flex;
@@ -105,28 +102,39 @@
     .btn-notes { background: #a855f7; }
     .btn-interview { background: #0ea5e9; }
     .btn-cheat { background: #06b6d4; }
-    .btn-linkedin { background: #0a66c2; }
-    /* 🔸 Golden TCL Tools button */
-.btn-tools {
-  background: linear-gradient(to right, #fbbf24, #f59e0b);
-  color: #1e293b;
-  padding: 9px 22px; /* slightly bigger */
+    /* LinkedIn Button */
+.btn-linkedin {
+  background: #0a66c2;
+  color: white;
+  padding: 8px 14px;
   border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 700;
+  text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: background 0.2s ease, transform 0.1s ease;
+  gap: 6px;
+  font-weight: 600;
+}
+.btn-linkedin:hover {
+  background: #004182;
 }
 
+    /* 🔸 Golden TCL Tools button */
+
+    .btn-tools {
+  background: #f59e0b;
+  color: #1e293b;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 .btn-tools:hover {
-  background: linear-gradient(to right, #f59e0b, #d97706);
-  transform: scale(1.03);
+  background: #f97316;
 }
-
 
     .btn-live:hover, .btn-challenges:hover, .btn-manual:hover, .btn-notes:hover, .btn-interview:hover, .btn-cheat:hover, .btn-linkedin:hover {
       opacity: 0.9;
@@ -191,9 +199,18 @@
       margin-top: 4px;
     }
 
-    .dropdown-menu {
-      padding: 8px 0;
-    }
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  top: 110%;
+  left: 0;
+  min-width: 200px;
+  z-index: 50;
+}
 
     .dropdown-item {
       padding: 12px 16px;
@@ -658,6 +675,7 @@
       margin-top: 20px;
     }
 
+
     .btn-submit:hover {
       background: #f97316;
     }
@@ -818,7 +836,6 @@
     /* 🔽 TCL Tools Dropdown Styles */
 .dropdown {
   position: relative;
-  display: inline-block;
 }
 
 .dropdown-menu {
@@ -837,25 +854,22 @@
 }
 
 .dropdown-menu.active {
-  display: flex;
+  display: block;
 }
 
 .dropdown-item {
-  text-decoration: none;
-  border: none;
+  color: #cbd5e1;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 6px;
-  margin: 2px 8px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
 }
-
 .dropdown-item:hover {
   background: #334155;
-  opacity: 0.95;
+  color: #fff;
 }
 
 .dropdown i {
@@ -865,20 +879,311 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #64748b;
     }
+
+
+/* Chatbot Styles */
+  .chatbot-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e293b;
+    font-size: 24px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+  }
+
+  .chatbot-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+  }
+
+  .chatbot-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 380px;
+    height: 500px;
+    background: #1e293b;
+    border: 2px solid #f59e0b;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    overflow: hidden;
+  }
+
+  .chatbot-container.active {
+    display: flex;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .chatbot-header {
+    background: linear-gradient(to right, #f59e0b, #fbbf24);
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #1e293b;
+    font-weight: 600;
+  }
+
+  .chatbot-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  .chatbot-close {
+    background: none;
+    border: none;
+    color: #1e293b;
+    font-size: 20px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+
+  .chatbot-close:hover {
+    background: rgba(30, 41, 59, 0.2);
+  }
+
+  .chatbot-models {
+    background: #334155;
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    border-bottom: 1px solid #475569;
+  }
+
+  .model-btn {
+    background: #475569;
+    color: #cbd5e1;
+    border: 1px solid #64748b;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .model-btn:hover {
+    background: #64748b;
+  }
+
+  .model-btn.active {
+    background: #f59e0b;
+    color: #1e293b;
+    border-color: #f59e0b;
+    font-weight: 600;
+  }
+
+  .chatbot-messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chatbot-clear {
+  background: none;
+  border: none;
+  color: #1e293b;
+  font-size: 16px;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+  margin-right: 8px;
+}
+
+.chatbot-clear:hover {
+  background: rgba(30, 41, 59, 0.2);
+}
+
+  .message {
+    max-width: 85%;
+    padding: 12px;
+    border-radius: 12px;
+    line-height: 1.5;
+    word-wrap: break-word;
+  }
+
+  .message.user {
+    background: #f59e0b;
+    color: #1e293b;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .message.bot {
+    background: #334155;
+    color: #e2e8f0;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .message.thinking {
+    background: #334155;
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  .chatbot-input-container {
+    padding: 16px;
+    border-top: 1px solid #475569;
+    display: flex;
+    gap: 8px;
+  }
+
+  .chatbot-input {
+    flex: 1;
+    padding: 10px 14px;
+    background: #334155;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .chatbot-input:focus {
+    border-color: #f59e0b;
+  }
+
+  .chatbot-send {
+    background: #f59e0b;
+    color: #1e293b;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chatbot-send:hover {
+    background: #fbbf24;
+  }
+
+  .chatbot-send:disabled {
+    background: #475569;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+
+  /* Scrollbar for chat */
+  .chatbot-messages::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .chatbot-messages::-webkit-scrollbar-track {
+    background: #1e293b;
+  }
+
+  .chatbot-messages::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 3px;
+  }
+
+  .chatbot-messages::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+
+  /* Model indicators */
+  .model-indicator {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 8px 12px;
+  }
+
+  .typing-dot {
+    width: 8px;
+    height: 8px;
+    background: #f59e0b;
+    border-radius: 50%;
+    animation: typing 1.4s infinite ease-in-out;
+  }
+
+  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+  @keyframes typing {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+  }
+      /* ✅ FIX for Profile Dropdown visibility */
+.profile-dropdown .dropdown-menu {
+  display: block !important;
+  position: static;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
   </style>
 </head>
 <body>
 
 <div class="navbar">
   <div class="navbar-left">
+    <!-- Logo -->
     <div class="logo">
       <i class="fas fa-terminal"></i>
-      TCLForge
+      <span>TCLForge</span>
     </div>
 
+    <!-- Search Box -->
     <div class="search-box">
       <i class="fas fa-search"></i>
-      <input type="text" placeholder="Search concepts..." id="search">
+      <input type="text" placeholder="Search concepts..." id="search" />
     </div>
 
     <!-- 🔽 TCL Tools Dropdown -->
@@ -912,37 +1217,39 @@
     </div>
   </div>
 
-  <div class="navbar-buttons">
-    <a href="https://www.linkedin.com/in/kunalsaraswat/" target="_blank" class="btn-linkedin">
-      <i class="fab fa-linkedin"></i>
-      LinkedIn
-    </a>
+  <!-- Right Side Buttons -->
+<div class="navbar-buttons">
+  <a href="https://www.linkedin.com/in/kunalsaraswat/" target="_blank" class="btn-linkedin">
+    <i class="fab fa-linkedin"></i> LinkedIn
+  </a>
 
-    <!-- Profile Dropdown -->
-    <div class="profile-container">
-      <button class="btn-profile" id="profileBtn">
-        <i class="fas fa-user"></i>
-        Profile
-      </button>
-      <div class="profile-dropdown" id="profileDropdown">
-        <div class="dropdown-header">
-          Logged in as
-          <div class="dropdown-username" id="usernameDisplay">User</div>
-        </div>
-        <div class="dropdown-menu">
-          <button class="dropdown-item" id="resetPasswordBtn">
-            <i class="fas fa-key"></i>
-            Change Password
-          </button>
-          <button class="dropdown-item logout" id="logoutBtn">
-            <i class="fas fa-sign-out-alt"></i>
-            Logout
-          </button>
-        </div>
+  <!-- Profile Dropdown -->
+  <div class="profile-container">
+    <button class="btn-profile" id="profileBtn">
+      <i class="fas fa-user"></i>
+      Profile
+    </button>
+
+    <div class="profile-dropdown" id="profileDropdown">
+      <div class="dropdown-header">
+        Logged in as
+        <div class="dropdown-username" id="usernameDisplay">User</div>
+      </div>
+
+      <div class="dropdown-menu">
+        <button class="dropdown-item" id="resetPasswordBtn">
+          <i class="fas fa-key"></i> Change Password
+        </button>
+        <button class="dropdown-item logout" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
       </div>
     </div>
   </div>
 </div>
+
+</div>
+
 
 
   <!-- Main Container -->
@@ -1201,6 +1508,64 @@
       <button class="btn-submit" onclick="resetPassword()">Update Password</button>
     </div>
   </div>
+
+<!-- Add this HTML before </body> -->
+<div class="chatbot-container" id="chatbotContainer">
+  <div class="chatbot-header">
+    <div class="chatbot-title">
+      <i class="fas fa-robot"></i>
+      TCL Assistant
+    </div>
+    <button class="chatbot-close" id="chatbotClose">
+      <i class="fas fa-times"></i>
+    </button>
+      <button class="chatbot-clear" id="chatbotClear" title="Clear chat history">
+  <i class="fas fa-trash-alt"></i>
+</button>
+  </div>
+
+  <div class="chatbot-models">
+    <button class="model-btn active" data-model="nvidia/nemotron-nano-9b-v2:free">
+      Nemotron 9B
+    </button>
+    <button class="model-btn" data-model="qwen/qwen3-4b:free">
+      Qwen 4B
+    </button>
+    <button class="model-btn" data-model="mistralai/mistral-small-3.2-24b-instruct:free">
+      Mistral Small
+    </button>
+    <button class="model-btn" data-model="openai/gpt-oss-20b:free">
+      OpenAI OSS
+    </button>
+  </div>
+
+  <div class="chatbot-messages" id="chatMessages">
+    <div class="message bot">
+      👋 Hello! I'm your TCL programming assistant. I can help you with:
+      • TCL syntax and commands
+      • Code debugging and examples
+      • Best practices and patterns
+      • Interview questions
+      <span class="model-indicator">Using: Nemotron 9B</span>
+    </div>
+  </div>
+
+  <div class="chatbot-input-container">
+    <input type="text" class="chatbot-input" id="chatInput"
+           placeholder="Ask about TCL programming..."
+           autocomplete="off">
+    <button class="chatbot-send" id="chatSend">
+      <i class="fas fa-paper-plane"></i>
+      Send
+    </button>
+  </div>
+</div>
+
+<button class="chatbot-toggle" id="chatbotToggle">
+  <div class="chatbot-logo">
+    <i class="fas fa-terminal"></i>
+  </div>
+</button>
 
   <script>
     // Enhanced Tcl Concepts Data (all 71 concepts)
@@ -1809,13 +2174,32 @@
       const token = localStorage.getItem("access");
       const email = localStorage.getItem("email");
 
-      if (!token) {
-        window.location.href = "/";
-        return;
-      }
+if (!token) {
+  window.location.href = "/login.html";  // ✅ redirect to actual login page
+  return;
+}
+    // =============================
+// 🌐 API Configuration
+// =============================
+const API_CONFIG = {
+  getBaseURL: function() {
+    const hostname = window.location.hostname;
+
+    // Local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://127.0.0.1:8000';
+    }
+
+    // Production
+    return 'https://tclforge.onrender.com';
+  }
+};
+
+const API_URL = API_CONFIG.getBaseURL();
+console.log('Using API URL:', API_URL); // For debugging
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/me", {
+        const res = await fetch(`${API_URL}/me`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -2031,21 +2415,32 @@ document.getElementById('reset-progress').addEventListener('click', () => {
         }
       });
 
-      // Profile dropdown
-      document.getElementById("profileBtn").addEventListener("click", (e) => {
-        e.stopPropagation();
-        document.getElementById("profileDropdown").classList.toggle("active");
-      });
 
-      document.addEventListener("click", () => {
-        document.getElementById("profileDropdown").classList.remove("active");
-      });
+        // =============================
+// 🔐 Profile Dropdown + Logout
+// =============================
 
-      // Logout
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "/";
-      });
+// Toggle dropdown visibility
+document.getElementById("profileBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  document.getElementById("profileDropdown").classList.toggle("active");
+});
+
+// Close dropdown when clicking outside
+document.addEventListener("click", (e) => {
+  const dropdown = document.getElementById("profileDropdown");
+  const profileBtn = document.getElementById("profileBtn");
+  if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+    dropdown.classList.remove("active");
+  }
+});
+
+// ✅ Logout functionality
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.clear();
+  window.location.href = "/login.html";
+});
+
 
       // Reset password modal
       document.getElementById("resetPasswordBtn").addEventListener("click", () => {
@@ -2245,7 +2640,7 @@ document.getElementById('reset-progress').addEventListener('click', () => {
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/auth-reset-password", {
+        const res = await fetch(`${API_URL}/auth-reset-password`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -2282,6 +2677,16 @@ document.getElementById('reset-progress').addEventListener('click', () => {
     window.showConcept = showConcept;
     window.showTab = showTab;
     window.resetPassword = resetPassword;
+
+      // =============================
+// 🔐 Profile Dropdown + Logout
+
+
+document.addEventListener("click", () => {
+  document.getElementById("profileDropdown").classList.remove("active");
+});
+
+
   </script>
 <!-- ✅ TCL Cheatsheet PDF Generator -->
 <script defer>
@@ -2442,6 +2847,272 @@ window.addEventListener('DOMContentLoaded', () => {
     btn.innerHTML = '<i class="fas fa-file-download"></i> Cheatsheet';
   });
 });
+
+
+</script>
+
+<script>
+  // Chatbot functionality
+  class TCLChatbot {
+    constructor() {
+      this.currentModel = 'nvidia/nemotron-nano-9b-v2:free';
+      this.apiKey = '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';
+      this.apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+      this.conversation = [];
+      this.isOpen = false;
+      this.isProcessing = false;
+    }
+
+    init() {
+      // Load saved conversation
+      const saved = localStorage.getItem('tclChatHistory');
+      if (saved) {
+        this.conversation = JSON.parse(saved);
+        this.loadMessages();
+      }
+
+      // Add system message if no conversation exists
+      if (this.conversation.length === 0) {
+        this.conversation.push({
+          role: 'system',
+          content: `You are a helpful TCL programming assistant. Focus on:
+                   - TCL/Tk programming language
+                   - Code examples and explanations
+                   - Debugging and best practices
+                   - Interview preparation for TCL roles
+                   - File operations, string manipulation, procedures
+                   - Keep responses concise and technical
+                   - If asked about non-TCL topics, politely redirect`
+        });
+      }
+
+      // Setup event listeners
+      this.setupEventListeners();
+
+      // Ensure initial welcome message is displayed
+      if (!saved) {
+        this.loadMessages();
+      }
+    }
+
+    setupEventListeners() {
+      // Toggle chatbot
+      document.getElementById('chatbotToggle').addEventListener('click', () => this.toggle());
+      document.getElementById('chatbotClose').addEventListener('click', () => this.toggle());
+
+      // Send message
+      document.getElementById('chatSend').addEventListener('click', () => this.sendMessage());
+      document.getElementById('chatInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.sendMessage();
+        }
+      });
+
+      // Model selection
+      document.querySelectorAll('.model-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          this.currentModel = e.target.dataset.model;
+          this.addMessage('bot', `Switched to ${e.target.textContent.trim()} model`);
+        });
+      });
+
+      // Clear chat history - FIXED: Added proper binding
+      document.getElementById('chatbotClear').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('Clear all chat history? This cannot be undone.')) {
+          this.clearHistory();
+          this.addMessage('bot', 'Chat history cleared. How can I help you with TCL programming?');
+        }
+      });
+    }
+
+    toggle() {
+      const container = document.getElementById('chatbotContainer');
+      const toggleBtn = document.getElementById('chatbotToggle');
+
+      this.isOpen = !this.isOpen;
+      container.classList.toggle('active');
+
+      if (this.isOpen) {
+        toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
+        document.getElementById('chatInput').focus();
+        this.scrollToBottom();
+      } else {
+        toggleBtn.innerHTML = '<i class="fas fa-robot"></i>';
+      }
+    }
+
+    async sendMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      const sendBtn = document.getElementById('chatSend');
+
+      if (!message || this.isProcessing) return;
+
+      // Clear input
+      input.value = '';
+      sendBtn.disabled = true;
+      this.isProcessing = true;
+
+      // Add user message
+      this.addMessage('user', message);
+      this.conversation.push({ role: 'user', content: message });
+
+      // Add thinking indicator
+      const thinkingId = this.addThinkingIndicator();
+
+      try {
+        const response = await this.callAPI(message);
+        this.removeThinkingIndicator(thinkingId);
+        this.addMessage('bot', response);
+        this.conversation.push({ role: 'assistant', content: response });
+      } catch (error) {
+        this.removeThinkingIndicator(thinkingId);
+        this.addMessage('bot', `Error: ${error.message}. Please try again.`);
+      }
+
+      // Save conversation
+      localStorage.setItem('tclChatHistory', JSON.stringify(this.conversation));
+
+      // Re-enable input
+      sendBtn.disabled = false;
+      this.isProcessing = false;
+    }
+
+    async callAPI(message) {
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'TCL Forge'
+        },
+        body: JSON.stringify({
+          model: this.currentModel,
+          messages: [
+            ...this.conversation,
+            { role: 'user', content: message }
+          ],
+          temperature: 0.7,
+          max_tokens: 500
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API request failed: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      return data.choices[0].message.content;
+    }
+
+    addMessage(sender, text) {
+      const messagesDiv = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`;
+
+      // Add model indicator for bot messages
+      if (sender === 'bot') {
+        const modelName = document.querySelector('.model-btn.active')?.textContent.trim() || 'Nemotron 9B';
+        messageDiv.innerHTML = `${text}<span class="model-indicator">Using: ${modelName}</span>`;
+      } else {
+        messageDiv.textContent = text;
+      }
+
+      messagesDiv.appendChild(messageDiv);
+      this.scrollToBottom();
+    }
+
+    addThinkingIndicator() {
+      const messagesDiv = document.getElementById('chatMessages');
+      const thinkingDiv = document.createElement('div');
+      thinkingDiv.className = 'message thinking';
+      thinkingDiv.id = 'thinking-' + Date.now();
+      thinkingDiv.innerHTML = `
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      `;
+      messagesDiv.appendChild(thinkingDiv);
+      this.scrollToBottom();
+      return thinkingDiv.id;
+    }
+
+    removeThinkingIndicator(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.remove();
+      }
+    }
+
+    loadMessages() {
+      const messagesDiv = document.getElementById('chatMessages');
+      messagesDiv.innerHTML = '';
+
+      // Add welcome message
+      const welcomeDiv = document.createElement('div');
+      welcomeDiv.className = 'message bot';
+      const modelName = document.querySelector('.model-btn.active')?.textContent.trim() || 'Nemotron 9B';
+      welcomeDiv.innerHTML = `
+        👋 Hello! I'm your TCL programming assistant. I can help you with:
+        • TCL syntax and commands
+        • Code debugging and examples
+        • Best practices and patterns
+        • Interview questions
+        <span class="model-indicator">Using: ${modelName}</span>
+      `;
+      messagesDiv.appendChild(welcomeDiv);
+
+      // Load conversation history (skip system message)
+      this.conversation.forEach(msg => {
+        if (msg.role !== 'system') {
+          const div = document.createElement('div');
+          div.className = `message ${msg.role === 'user' ? 'user' : 'bot'}`;
+
+          if (msg.role === 'assistant') {
+            const modelName = document.querySelector('.model-btn.active')?.textContent.trim() || 'Nemotron 9B';
+            div.innerHTML = `${msg.content}<span class="model-indicator">Using: ${modelName}</span>`;
+          } else {
+            div.textContent = msg.content;
+          }
+
+          messagesDiv.appendChild(div);
+        }
+      });
+
+      this.scrollToBottom();
+    }
+
+    scrollToBottom() {
+      const messagesDiv = document.getElementById('chatMessages');
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    clearHistory() {
+      // Keep only the system message
+      const systemMessage = this.conversation.find(msg => msg.role === 'system');
+      this.conversation = systemMessage ? [systemMessage] : [];
+
+      // Clear localStorage
+      localStorage.removeItem('tclChatHistory');
+
+      // Reload messages
+      this.loadMessages();
+    }
+  }
+
+  // Initialize chatbot when page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    window.tclChatbot = new TCLChatbot();
+    window.tclChatbot.init();
+  });
 </script>
 
 <script>
