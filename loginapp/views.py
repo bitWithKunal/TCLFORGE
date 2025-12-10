@@ -92,7 +92,7 @@ class LogoutAPIView(APIView):
 # =====================================================
 # 🔹 SEND OTP FOR PASSWORD RESET
 # =====================================================
-
+class SendOTPAPIView(APIView):
     def post(self, request):
         email = request.data.get("email")
         if not email:
@@ -126,16 +126,19 @@ class LogoutAPIView(APIView):
         try:
             send_mail(
                 subject = "TCL Forge Password Assistance - OTP Verification",
-                message = (
-    "TCL Forge Password Reset\n\n"
-    "Dear User,\n\n"
-    f"Your OTP for password reset is: {otp}\n\n"
-    "This code will expire in 5 minutes.\n"
-    "If you did not request this reset, please ignore this message.\n\n"
-    "— TCL Forge\n"
-    "Tool created by Kunal Saraswat"
-)
+                message=f"""
+                TCL Forge Password Reset
 
+                Dear User,
+
+                Your OTP for password reset is: {otp}
+
+                This code will expire in 5 minutes. 
+                If you didn’t request this reset, please ignore this message.
+
+                — TCL Forge  
+                Tool created by Kunal Saraswat
+                """,
 
             from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[email],
