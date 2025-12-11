@@ -51,6 +51,51 @@
             51%, 100% { opacity: 0; }
         }
 
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(250, 204, 21, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(250, 204, 21, 0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
         /* ========================================
            🌌 GLOBAL STYLES
         ======================================== */
@@ -83,6 +128,14 @@
             animation: fadein 1.6s ease forwards;
         }
 
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
         /* ========================================
            🧊 CARD / INPUT / BUTTON STYLING
         ======================================== */
@@ -92,7 +145,7 @@
             backdrop-filter: blur(14px);
             border-radius: 1rem;
             box-shadow: 0 0 25px rgba(250, 204, 21, .2);
-            transition: all .3s;
+            transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .glass:hover {
@@ -106,7 +159,7 @@
             color: #fef9c3;
             padding: .6rem .9rem;
             width: 100%;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tcl-input:focus {
@@ -115,6 +168,7 @@
             box-shadow: 0 0 12px #facc15;
             background: rgba(255, 255, 255, 0.12);
             color: white;
+            transform: translateY(-2px);
         }
 
         .btn-primary {
@@ -126,13 +180,34 @@
             padding: .7rem;
             border-radius: .6rem;
             box-shadow: 0 0 25px rgba(250, 204, 21, .3);
-            transition: all .3s;
+            transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
             filter: brightness(1.15);
             box-shadow: 0 0 30px rgba(250, 204, 21, .4);
+        }
+
+        .btn-primary:active:not(:disabled)::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: ripple 0.6s ease-out;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.8;
+            cursor: not-allowed;
         }
 
         /* ========================================
@@ -151,6 +226,7 @@
             overflow-y: auto;
             height: 340px;
             z-index: 2;
+            animation: slideUp 0.6s ease forwards;
         }
 
         .cursor {
@@ -187,8 +263,10 @@
             padding: 10px 12px;
             font-size: 1.4rem;
             backdrop-filter: blur(8px);
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 0 10px rgba(250, 204, 21, 0.25);
+            cursor: pointer;
+            position: relative;
         }
 
         .action-btn:hover {
@@ -196,6 +274,11 @@
             background: #facc15;
             transform: scale(1.1);
             box-shadow: 0 0 18px rgba(250, 204, 21, 0.6);
+            animation: pulse-ring 1.5s ease-out;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
         }
 
         .footer {
@@ -228,6 +311,90 @@
             opacity: 0;
             transition: opacity 0.4s ease;
             z-index: 9999;
+            animation: slideUp 0.4s ease forwards;
+        }
+
+        /* ========================================
+           📧 SUPPORT MESSAGE STYLING
+        ======================================== */
+        .support-message {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(250, 204, 21, 0.2);
+            font-size: 0.85rem;
+            color: #fef3c7;
+            line-height: 1.5;
+            animation: slideUp 0.5s ease forwards 0.1s;
+            animation-fill-mode: both;
+        }
+
+        .support-link {
+            color: #facc15;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .support-link:hover {
+            color: #fbbf24;
+            text-shadow: 0 0 8px rgba(250, 204, 21, 0.5);
+            transform: translateX(2px);
+            display: inline-block;
+        }
+
+        /* ========================================
+           ⏳ LOADING SPINNER
+        ======================================== */
+        .spinner-container {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9998;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .spinner-container.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(250, 204, 21, 0.2);
+            border-top: 4px solid #facc15;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+        }
+
+        .spinner-text {
+            position: absolute;
+            bottom: 100px;
+            color: #facc15;
+            font-size: 0.9rem;
+            font-weight: 600;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* ========================================
+           ✅ SUCCESS ANIMATION
+        ======================================== */
+        .form-success {
+            animation: slideUp 0.4s ease forwards;
         }
     </style>
 </head>
@@ -243,11 +410,20 @@
         </p>
     </header>
 
-    <!-- ================= LINKEDIN BUTTON ================= -->
+    <!-- ================= ACTION BUTTONS ================= -->
     <div class="action-buttons">
+        <button onclick="openGmailSupport()" class="action-btn" title="Contact Support">
+            <i class="fas fa-envelope"></i>
+        </button>
         <a href="https://www.linkedin.com/in/kunalsaraswat/" target="_blank" class="action-btn" title="LinkedIn">
             <i class="fab fa-linkedin"></i>
         </a>
+    </div>
+
+    <!-- ================= LOADING SPINNER ================= -->
+    <div id="spinnerContainer" class="spinner-container">
+        <div class="spinner"></div>
+        <div class="spinner-text">forge_authenticating...</div>
     </div>
 
     <!-- ================= MAIN CONTENT ================= -->
@@ -270,12 +446,18 @@
                 <div id="loginForm">
                     <input class="tcl-input mb-4" type="email" id="loginEmail" placeholder="Email" />
                     <input class="tcl-input mb-4" type="password" id="loginPass" placeholder="Password" />
-                    <button class="btn-primary mt-3" onclick="login()">forge_login</button>
+                    <button class="btn-primary mt-3" onclick="login()" id="loginBtn">forge_login</button>
                     <p class="text-sm text-yellow-200 mt-6">
-                        <span class="text-yellow-400 cursor-pointer" onclick="toggleForm('forgot')">forgot_password</span> |
+                        <span class="text-yellow-400 cursor-pointer hover:text-yellow-300 transition-colors" onclick="toggleForm('forgot')">forgot_password</span> |
                         Need a new account?
-                        <span class="text-yellow-400 cursor-pointer" onclick="toggleForm('signup')">forge_signup</span>
+                        <span class="text-yellow-400 cursor-pointer hover:text-yellow-300 transition-colors" onclick="toggleForm('signup')">forge_signup</span>
                     </p>
+
+                    <!-- SUPPORT MESSAGE -->
+                    <div class="support-message">
+                        Having trouble accessing your account?
+                        <span class="support-link" onclick="openGmailSupport()">contact_support</span> for password recovery assistance.
+                    </div>
                 </div>
 
                 <!-- SIGNUP FORM -->
@@ -283,24 +465,36 @@
                     <input class="tcl-input mb-4" type="text" id="signupName" placeholder="Full Name" />
                     <input class="tcl-input mb-4" type="email" id="signupEmail" placeholder="Email Address" />
                     <input class="tcl-input mb-4" type="password" id="signupPass" placeholder="Password" />
-                    <button class="btn-primary mt-3" onclick="signup()">forge_register</button>
+                    <button class="btn-primary mt-3" onclick="signup()" id="signupBtn">forge_register</button>
                     <p class="text-sm text-yellow-200 mt-6">
                         Already registered?
-                        <span class="text-yellow-400 cursor-pointer" onclick="toggleForm('login')">forge_login</span>
+                        <span class="text-yellow-400 cursor-pointer hover:text-yellow-300 transition-colors" onclick="toggleForm('login')">forge_login</span>
                     </p>
+
+                    <!-- SUPPORT MESSAGE -->
+                    <div class="support-message">
+                        Need help?
+                        <span class="support-link" onclick="openGmailSupport()">contact_support</span> for registration assistance.
+                    </div>
                 </div>
 
                 <!-- FORGOT PASSWORD FORM -->
                 <div id="forgotForm" class="hidden">
                     <input class="tcl-input mb-4" type="email" id="resetEmail" placeholder="Enter registered email" />
-                    <button class="btn-primary mb-3" onclick="sendOTP()">send_otp</button>
+                    <button class="btn-primary mb-3" onclick="sendOTP()" id="otpBtn">send_otp</button>
                     <input class="tcl-input mb-4" type="text" id="resetOtp" placeholder="Enter OTP" />
                     <input class="tcl-input mb-4" type="password" id="newPassword" placeholder="Enter new password" />
-                    <button class="btn-primary mt-2" onclick="resetPassword()">reset_password</button>
+                    <button class="btn-primary mt-2" onclick="resetPassword()" id="resetBtn">reset_password</button>
                     <p class="text-sm text-yellow-200 mt-6">
                         Back to
-                        <span class="text-yellow-400 cursor-pointer" onclick="toggleForm('login')">forge_login</span>
+                        <span class="text-yellow-400 cursor-pointer hover:text-yellow-300 transition-colors" onclick="toggleForm('login')">forge_login</span>
                     </p>
+
+                    <!-- SUPPORT MESSAGE -->
+                    <div class="support-message">
+                        Didn't receive your OTP?
+                        <span class="support-link" onclick="openGmailSupport()">contact_support</span> for password reset assistance.
+                    </div>
                 </div>
             </div>
         </div>
@@ -313,10 +507,9 @@
     <!-- ================= SCRIPT SECTION ================= -->
     <script>
         // 🔹 Auto-detect backend URL: local (dev) or Render (prod)
-const API_BASE = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1")
-  ? "http://127.0.0.1:8000"
-  : "https://tclforge.onrender.com";
-
+        const API_BASE = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1")
+            ? "http://127.0.0.1:8000"
+            : "https://tclforge.onrender.com";
 
         // Terminal simulation
         const lines = [
@@ -344,7 +537,7 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
         }
         type();
 
-        // Message popup
+        // Message popup with animation
         function showMessage(msg, color = "#facc15") {
             const b = document.getElementById("msgBox");
             b.textContent = msg;
@@ -353,10 +546,33 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
             setTimeout(() => (b.style.opacity = "0"), 2500);
         }
 
+        // Show/Hide Loading Spinner
+        function toggleSpinner(show) {
+            const spinner = document.getElementById("spinnerContainer");
+            if (show) {
+                spinner.classList.add("active");
+            } else {
+                spinner.classList.remove("active");
+            }
+        }
+
         // Form toggler
         function toggleForm(t) {
             ["loginForm", "signupForm", "forgotForm"].forEach(id => document.getElementById(id).classList.add("hidden"));
             document.getElementById(t + "Form").classList.remove("hidden");
+        }
+
+        // OPEN GMAIL SUPPORT - Works on Local and Server
+        function openGmailSupport() {
+            const recipientEmail = "test.tclforge@gmail.com";
+            const subject = "TCL Forge Support Request";
+            const body = "Hello Support Team,%0A%0AI need assistance with my TCL Forge account.%0A%0APlease help me with:%0A%0AThank you";
+
+            // Direct Gmail web compose URL
+            const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipientEmail}&su=${encodeURIComponent(subject)}&body=${body}`;
+
+            // Open in new tab
+            window.open(gmailComposeUrl, '_blank');
         }
 
         // ENTER key handler
@@ -376,9 +592,13 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
         async function login() {
             const email = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPass").value.trim();
+            const loginBtn = document.getElementById("loginBtn");
 
             if (!email || !password)
                 return showMessage('puts "Missing credentials"', "#ff7070");
+
+            toggleSpinner(true);
+            loginBtn.disabled = true;
 
             try {
                 const res = await fetch(`${API_BASE}/login`, {
@@ -396,9 +616,17 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
                     showMessage(`puts "Access Granted — Welcome ${email}"`, "#a7f3d0");
                     setTimeout(() => (window.location.href = "/index"), 1000);
                 } else {
+                    toggleSpinner(false);
+                    loginBtn.disabled = false;
+                    document.getElementById("loginForm").classList.add("animate-shake");
+                    setTimeout(() => document.getElementById("loginForm").classList.remove("animate-shake"), 500);
                     showMessage(`puts "${data.error || data.detail || "Invalid credentials"}"`, "#ff7070");
                 }
             } catch (e) {
+                toggleSpinner(false);
+                loginBtn.disabled = false;
+                document.getElementById("loginForm").classList.add("animate-shake");
+                setTimeout(() => document.getElementById("loginForm").classList.remove("animate-shake"), 500);
                 showMessage('puts "Server error. Try again later."', "#ff7070");
             }
         }
@@ -408,9 +636,13 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
             const name = document.getElementById("signupName").value.trim();
             const email = document.getElementById("signupEmail").value.trim();
             const password = document.getElementById("signupPass").value.trim();
+            const signupBtn = document.getElementById("signupBtn");
 
             if (!name || !email || !password)
                 return showMessage('puts "All fields required"', "#ff7070");
+
+            toggleSpinner(true);
+            signupBtn.disabled = true;
 
             try {
                 const res = await fetch(`${API_BASE}/signup`, {
@@ -422,12 +654,21 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
                 const data = await res.json();
 
                 if (res.ok) {
+                    toggleSpinner(false);
                     showMessage('puts "User registered — Please login"', "#a7f3d0");
-                    toggleForm("login");
+                    setTimeout(() => toggleForm("login"), 1000);
                 } else {
+                    toggleSpinner(false);
+                    signupBtn.disabled = false;
+                    document.getElementById("signupForm").classList.add("animate-shake");
+                    setTimeout(() => document.getElementById("signupForm").classList.remove("animate-shake"), 500);
                     showMessage(`puts "${data.error || data.detail || "Signup failed"}"`, "#ff7070");
                 }
             } catch (e) {
+                toggleSpinner(false);
+                signupBtn.disabled = false;
+                document.getElementById("signupForm").classList.add("animate-shake");
+                setTimeout(() => document.getElementById("signupForm").classList.remove("animate-shake"), 500);
                 showMessage('puts "Server error during signup"', "#ff7070");
             }
         }
@@ -435,7 +676,12 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
         // SEND OTP
         async function sendOTP() {
             const email = document.getElementById("resetEmail").value.trim();
+            const otpBtn = document.getElementById("otpBtn");
+
             if (!email) return showMessage('puts "Enter your email"', "#ff7070");
+
+            toggleSpinner(true);
+            otpBtn.disabled = true;
 
             try {
                 const res = await fetch(`${API_BASE}/send-otp`, {
@@ -446,11 +692,21 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
 
                 const data = await res.json();
                 if (res.ok) {
+                    toggleSpinner(false);
                     showMessage('puts "OTP sent to your email"', "#a7f3d0");
+                    otpBtn.disabled = false;
                 } else {
+                    toggleSpinner(false);
+                    otpBtn.disabled = false;
+                    document.getElementById("forgotForm").classList.add("animate-shake");
+                    setTimeout(() => document.getElementById("forgotForm").classList.remove("animate-shake"), 500);
                     showMessage(`puts "${data.error || data.detail || "Failed to send OTP"}"`, "#ff7070");
                 }
             } catch (e) {
+                toggleSpinner(false);
+                otpBtn.disabled = false;
+                document.getElementById("forgotForm").classList.add("animate-shake");
+                setTimeout(() => document.getElementById("forgotForm").classList.remove("animate-shake"), 500);
                 showMessage('puts "Server error while sending OTP"', "#ff7070");
             }
         }
@@ -460,9 +716,13 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
             const email = document.getElementById("resetEmail").value.trim();
             const otp = document.getElementById("resetOtp").value.trim();
             const password = document.getElementById("newPassword").value.trim();
+            const resetBtn = document.getElementById("resetBtn");
 
             if (!email || !otp || !password)
                 return showMessage('puts "All fields required"', "#ff7070");
+
+            toggleSpinner(true);
+            resetBtn.disabled = true;
 
             try {
                 const res = await fetch(`${API_BASE}/reset-password`, {
@@ -473,12 +733,21 @@ const API_BASE = window.location.hostname.includes("localhost") || window.locati
 
                 const data = await res.json();
                 if (res.ok) {
+                    toggleSpinner(false);
                     showMessage('puts "Password reset successful"', "#a7f3d0");
                     setTimeout(() => toggleForm("login"), 1200);
                 } else {
+                    toggleSpinner(false);
+                    resetBtn.disabled = false;
+                    document.getElementById("forgotForm").classList.add("animate-shake");
+                    setTimeout(() => document.getElementById("forgotForm").classList.remove("animate-shake"), 500);
                     showMessage(`puts "${data.error || data.detail || "Invalid OTP"}"`, "#ff7070");
                 }
             } catch (e) {
+                toggleSpinner(false);
+                resetBtn.disabled = false;
+                document.getElementById("forgotForm").classList.add("animate-shake");
+                setTimeout(() => document.getElementById("forgotForm").classList.remove("animate-shake"), 500);
                 showMessage('puts "Server error during password reset"', "#ff7070");
             }
         }
